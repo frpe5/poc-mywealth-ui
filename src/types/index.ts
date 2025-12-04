@@ -23,6 +23,19 @@ export interface Agreement {
   comments?: string;
   selectedAccounts?: string[]; // IDs of accounts selected for this agreement
   selectedPolicyId?: string; // ID of selected asset allocation policy
+  selectedHouseholdMembers?: string[]; // IDs of household members included in billing
+  billingFrequency?: string;
+  billingStartDate?: string;
+  billingAccount?: string; // 'individual' or 'household'
+  programType?: string;
+  feeType?: string;
+  currentFeeAccount?: string;
+  clientBillableAssets?: number;
+  totalHouseholdBillableAssets?: number;
+  programFeeType?: string;
+  feeSchedule?: string;
+  integrationPeriod?: string;
+  purposeOfAgreement?: string;
   // Client-related fields for display
   clientRoot?: string;
   iaCode?: string;
@@ -91,6 +104,7 @@ export enum ModificationRequestType {
 }
 
 export enum ModificationRequestStatus {
+  DRAFT = 'DRAFT',
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
@@ -129,6 +143,12 @@ export interface CreateAgreementFormValues {
   programType: string;
   feeType: string;
   currentFeeAccount: string;
+  clientBillableAssets: number;
+  totalHouseholdBillableAssets: number;
+  programFeeType: string;
+  feeSchedule: string;
+  integrationPeriod: string;
+  purposeOfAgreement: string;
   
   // Step 6: Products and Services
   products: AgreementProductInput[];
@@ -198,6 +218,11 @@ export interface Client {
   address?: string;
   type: ClientType;
   status: string;
+  dateOfBirth?: string; // For individual clients
+  clientRoot?: string;
+  iaCode?: string;
+  residency?: string;
+  language?: string;
 }
 
 export enum ClientType {

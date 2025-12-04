@@ -11,7 +11,7 @@ import { GET_AGREEMENT_BY_ID, GET_CLIENT_ACCOUNTS } from '@graphql/queries';
 import { CREATE_MODIFICATION_REQUEST } from '@graphql/mutations';
 import { useAppContext } from '@contexts/AppContext';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
-import { CreateAgreementFormValues, NotificationType } from '../../types';
+import { CreateAgreementFormValues, NotificationType, AgreementStatus } from '../../types';
 import AgreementWizard from '@/components/AgreementWizard';
 
 const ModifyAgreement: React.FC = () => {
@@ -59,6 +59,7 @@ const ModifyAgreement: React.FC = () => {
   const [createModificationRequest, { loading: submitting }] = useMutation(
     CREATE_MODIFICATION_REQUEST
   );
+  const [savingDraft, setSavingDraft] = React.useState(false);
 
   const agreement = rawAgreement || data?.agreement;
   const accounts = rawAccounts || accountsData?.clientAccounts || [];
@@ -71,14 +72,20 @@ const ModifyAgreement: React.FC = () => {
     startDate: agreement?.startDate || new Date().toISOString().split('T')[0],
     endDate: agreement?.endDate || '',
     selectedAccounts: agreement?.selectedAccounts || (accounts.length > 0 ? [accounts[0].id] : []),
-    selectedPolicyId: '4', // Default to AAP-004 (matches the CODE shown)
-    billingFrequency: 'Monthly',
-    billingStartDate: agreement?.startDate || new Date().toISOString().split('T')[0],
-    billingAccount: 'individual',
-    selectedHouseholdMembers: ['HH006'], // James Davis (Partner) for client 5
-    programType: agreement?.agreementType || 'Wealth Management - Unified',
-    feeType: 'Dynamic',
-    currentFeeAccount: 'yes',
+    selectedPolicyId: agreement?.selectedPolicyId || '',
+    billingFrequency: agreement?.billingFrequency || '',
+    billingStartDate: agreement?.billingStartDate || agreement?.startDate || new Date().toISOString().split('T')[0],
+    billingAccount: agreement?.billingAccount || 'individual',
+    selectedHouseholdMembers: agreement?.selectedHouseholdMembers || [],
+    programType: agreement?.programType || agreement?.agreementType || '',
+    feeType: agreement?.feeType || '',
+    currentFeeAccount: agreement?.currentFeeAccount || 'yes',
+    clientBillableAssets: agreement?.clientBillableAssets || 0,
+    totalHouseholdBillableAssets: agreement?.totalHouseholdBillableAssets || 0,
+    programFeeType: agreement?.programFeeType || '',
+    feeSchedule: agreement?.feeSchedule || '',
+    integrationPeriod: agreement?.integrationPeriod || '',
+    purposeOfAgreement: agreement?.purposeOfAgreement || '',
     products: agreement?.products || [],
     terms: agreement?.terms || [],
     documents: agreement?.documents || [],
@@ -95,23 +102,58 @@ const ModifyAgreement: React.FC = () => {
             reason: 'Agreement modification through wizard',
             comments: values.comments,
             changes: [], // In real implementation, track what changed
+            status: 'PENDING',
           },
         },
       });
 
       addNotification({
         type: NotificationType.MODIFICATION_REQUESTED,
-        message: 'Modification request submitted successfully',
+        message: 'Modification request submitted successfully and is pending approval',
         severity: 'success',
       });
 
-      nav.goToPendingModifications();
+      nav.goToDashboard();
     } catch (error) {
       addNotification({
         type: NotificationType.MODIFICATION_REQUESTED,
         message: `Failed to submit modification request: ${error}`,
         severity: 'error',
       });
+    }
+  };
+
+  const handleSaveDraft = async (values: CreateAgreementFormValues) => {
+    setSavingDraft(true);
+    try {
+      await createModificationRequest({
+        variables: {
+          input: {
+            agreementId: id,
+            requestType: 'UPDATE',
+            reason: 'Draft - Agreement modification in progress',
+            comments: values.comments || 'Draft modification',
+            changes: [],
+            status: 'DRAFT',
+          },
+        },
+      });
+
+      addNotification({
+        type: NotificationType.MODIFICATION_REQUESTED,
+        message: 'Draft saved successfully',
+        severity: 'success',
+      });
+
+      nav.goToDashboard();
+    } catch (error) {
+      addNotification({
+        type: NotificationType.MODIFICATION_REQUESTED,
+        message: `Failed to save draft: ${error}`,
+        severity: 'error',
+      });
+    } finally {
+      setSavingDraft(false);
     }
   };
 
@@ -123,7 +165,7 @@ const ModifyAgreement: React.FC = () => {
     );
   }
 
-  if (error || !data?.agreement) {
+  if (error || !agreement) {
     return (
       <Box>
         <Alert severity="error">
@@ -141,6 +183,25 @@ const ModifyAgreement: React.FC = () => {
     );
   }
 
+  // Check if agreement is pending approval
+  if (agreement.status === AgreementStatus.PENDING_APPROVAL) {
+    return (
+      <Box>
+        <Alert severity="warning">
+          This agreement is pending approval and cannot be modified at this time.
+          <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+            <Button variant="outlined" onClick={() => nav.goToAgreementDetails(id!)} size="small">
+              View Agreement
+            </Button>
+            <Button variant="outlined" onClick={() => nav.goToDashboard()} size="small">
+              Back to Dashboard
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <AgreementWizard
       title="Modify UMA Agreement"
@@ -148,8 +209,10 @@ const ModifyAgreement: React.FC = () => {
       initialValues={initialValues}
       onSubmit={handleSubmit}
       onCancel={() => nav.goToAgreementDetails(id!)}
+      onSaveDraft={handleSaveDraft}
       submitButtonText="Submit Changes"
       submitting={submitting}
+      savingDraft={savingDraft}
     />
   );
 };

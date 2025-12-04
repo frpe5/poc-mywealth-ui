@@ -22,6 +22,7 @@ import {
 import { FormikProps } from 'formik';
 import { CreateAgreementFormValues } from '../../../types';
 import { GET_PROGRAM_FEES } from '@graphql/queries';
+import { feeSchedules } from '../../../mocks/mockData';
 
 type Props = FormikProps<CreateAgreementFormValues>;
 
@@ -45,7 +46,21 @@ const ProgramFeesStep: React.FC<Props> = ({ values, setFieldValue }) => {
     }
   }, [loading]);
 
+  // Update total household billable assets when client billable assets changes
+  React.useEffect(() => {
+    if (values.clientBillableAssets && values.clientBillableAssets > 0) {
+      setFieldValue('totalHouseholdBillableAssets', values.clientBillableAssets);
+    } else {
+      setFieldValue('totalHouseholdBillableAssets', 0);
+    }
+  }, [values.clientBillableAssets, setFieldValue]);
+
   const programFee = rawProgramFees || data?.programFees;
+  
+  // Get fee rates based on selected schedule
+  const currentFeeRates = values.feeSchedule && feeSchedules[values.feeSchedule] 
+    ? feeSchedules[values.feeSchedule]
+    : programFee?.feeRates || [];
 
   if (loading) {
     return (
@@ -68,146 +83,170 @@ const ProgramFeesStep: React.FC<Props> = ({ values, setFieldValue }) => {
         Program Fees
       </Typography>
 
-      <Box sx={{ p: 3, bgcolor: '#f5f9ff', borderRadius: 2, mb: 3 }}>
+      <Box sx={{ mb: 3 }}>
         <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-          Client billable assets in {values.programType} ($)
+          Client billable assets in myWealth - Unified ($)
         </Typography>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-          {programFee?.billableAssets ? `$${programFee.billableAssets.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00'}
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+          Minimum investment is ${programFee?.minAmount?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '5,000.00'}
         </Typography>
-        {programFee && programFee.billableAssets < programFee.minAmount && (
+        <TextField
+          fullWidth
+          type="number"
+          value={values.clientBillableAssets > 0 ? values.clientBillableAssets : ''}
+          onChange={(e) => {
+            const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
+            setFieldValue('clientBillableAssets', value);
+          }}
+          size="small"
+          sx={{ mb: 2 }}
+        />
+        {values.clientBillableAssets > 0 && programFee && values.clientBillableAssets < programFee.minAmount && (
           <Alert severity="error" sx={{ mb: 2 }}>
             The minimum amount required for this program is ${programFee.minAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </Alert>
         )}
         <Typography variant="body2" color="text.secondary">
-          Total household billable assets in myWEALTH - All inclusive: $0.00
+          Total household billable assets in myWEALTH - All inclusive: {values.totalHouseholdBillableAssets > 0 ? `$${values.totalHouseholdBillableAssets.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00'}
         </Typography>
       </Box>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} md={6}>
           <TextField
             fullWidth
             select
-            label="Program Type"
-            value={values.programType}
-            onChange={(e) => setFieldValue('programType', e.target.value)}
+            label="Program Fee Type"
+            value={values.programFeeType || ''}
+            onChange={(e) => setFieldValue('programFeeType', e.target.value)}
             size="small"
           >
-            <MenuItem value="Premium Wealth Management">Premium Wealth Management</MenuItem>
-            <MenuItem value="Standard Wealth Management">Standard Wealth Management</MenuItem>
+            <MenuItem value="Dynamic">Dynamic</MenuItem>
+            <MenuItem value="Fixed">Fixed</MenuItem>
+          </TextField>
+        </Grid>
+      </Grid>
+
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="body2" sx={{ fontWeight: 600, mb: 2 }}>
+          The following fee schedule of annual rates will be applied to the above mentioned billable assets
+        </Typography>
+        <TextField
+          fullWidth
+          select
+          label="Select a Fee Schedule"
+          value={values.feeSchedule || ''}
+          onChange={(e) => setFieldValue('feeSchedule', e.target.value)}
+          size="small"
+          sx={{ mb: 3 }}
+        >
+          <MenuItem value="UMOB">UMOB</MenuItem>
+          <MenuItem value="UMOS">UMOS</MenuItem>
+          <MenuItem value="Standard">Standard</MenuItem>
+        </TextField>
+
+        {values.feeSchedule && (
+          <TableContainer component={Paper} sx={{ mb: 3 }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Assets</TableCell>
+                  <TableCell align="right">Annual Rate</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {currentFeeRates.map((rate: any, index: number) => (
+                  <TableRow key={index}>
+                    <TableCell>% on the {rate.tier}</TableCell>
+                    <TableCell align="right">{rate.rate}%</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+
+        {values.feeSchedule && (
+          <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              Internal Use Code: <Box component="span" sx={{ fontWeight: 400 }}>{values.feeSchedule}</Box>
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            select
+            label="Asset allocation policy integration period"
+            value={values.integrationPeriod || ''}
+            onChange={(e) => setFieldValue('integrationPeriod', e.target.value)}
+            size="small"
+          >
+            <MenuItem value="At the portfolio manager's discretion">At the portfolio manager's discretion</MenuItem>
+            <MenuItem value="30 days">30 days</MenuItem>
+            <MenuItem value="60 days">60 days</MenuItem>
+            <MenuItem value="90 days">90 days</MenuItem>
           </TextField>
         </Grid>
         <Grid item xs={12} md={6}>
           <TextField
             fullWidth
-            label="Program Fee Type"
-            value={programFee?.feeType || ''}
+            select
+            label="Purpose of this agreement"
+            value={values.purposeOfAgreement || ''}
+            onChange={(e) => setFieldValue('purposeOfAgreement', e.target.value)}
             size="small"
-            InputProps={{ readOnly: true }}
-          />
+          >
+            <MenuItem value="Establish a myWealth Unified agreement">Establish a myWealth Unified agreement</MenuItem>
+            <MenuItem value="Wealth accumulation">Wealth accumulation</MenuItem>
+            <MenuItem value="Retirement planning">Retirement planning</MenuItem>
+            <MenuItem value="Estate planning">Estate planning</MenuItem>
+          </TextField>
         </Grid>
       </Grid>
 
-      {programFee && (
-        <>
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
-              The following fee schedule of annual rates will be applied to the above mentioned billable assets
-            </Typography>
-            <TextField
-              fullWidth
-              label="Fee Schedule"
-              value={programFee.feeSchedule}
-              size="small"
-              sx={{ mb: 3 }}
-              InputProps={{ readOnly: true }}
-            />
-
-            <TableContainer component={Paper} sx={{ mb: 3 }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Assets</TableCell>
-                    <TableCell align="right">Annual Rate</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {programFee.feeRates?.map((rate: any, index: number) => (
-                    <TableRow key={index}>
-                      <TableCell>{rate.tier}</TableCell>
-                      <TableCell align="right">{rate.rate}%</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Integration Period"
-                value={programFee.integrationPeriod}
-                size="small"
-                InputProps={{ readOnly: true }}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Purpose"
-                value={programFee.purpose}
-                size="small"
-                InputProps={{ readOnly: true }}
-              />
-            </Grid>
-          </Grid>
-        </>
-      )}
-
-      <Box sx={{ mt: 4 }}>
-        <Box sx={{ p: 3, bgcolor: '#f5f9ff', borderRadius: 2 }}>
-          <RadioGroup
-            value={values.currentFeeAccount}
-            onChange={(e) => setFieldValue('currentFeeAccount', e.target.value)}
-          >
-            <FormControlLabel
-              value="yes"
-              control={<Radio />}
-              label={
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    You already have a fee-based account
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Current fee-based account type
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    select
-                    value={values.feeType || 'advisory'}
-                    onChange={(e) => setFieldValue('feeType', e.target.value)}
-                    size="small"
-                    sx={{ mt: 1 }}
-                    disabled={values.currentFeeAccount !== 'yes'}
-                  >
-                    <MenuItem value="advisory">myWealth - Advisory</MenuItem>
-                    <MenuItem value="managed">myWealth - Managed</MenuItem>
-                  </TextField>
-                </Box>
-              }
-            />
-            <FormControlLabel
-              value="no"
-              control={<Radio />}
-              label="Your account is not a fee-based platform currently"
-              sx={{ mt: 2 }}
-            />
-          </RadioGroup>
-        </Box>
+      <Box sx={{ p: 3, bgcolor: '#f5f9ff', borderRadius: 2 }}>
+        <RadioGroup
+          value={values.currentFeeAccount}
+          onChange={(e) => setFieldValue('currentFeeAccount', e.target.value)}
+        >
+          <FormControlLabel
+            value="yes"
+            control={<Radio />}
+            label={
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  You already have a fee-based account
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Current fee-based account type
+                </Typography>
+                <TextField
+                  fullWidth
+                  select
+                  value={values.feeType || 'myWealth - Advisory'}
+                  onChange={(e) => setFieldValue('feeType', e.target.value)}
+                  size="small"
+                  sx={{ mt: 1, maxWidth: 300 }}
+                  disabled={values.currentFeeAccount !== 'yes'}
+                >
+                  <MenuItem value="myWealth - Advisory">myWealth - Advisory</MenuItem>
+                  <MenuItem value="myWealth - Managed">myWealth - Managed</MenuItem>
+                  <MenuItem value="myWealth - Unified">myWealth - Unified</MenuItem>
+                </TextField>
+              </Box>
+            }
+          />
+          <FormControlLabel
+            value="no"
+            control={<Radio />}
+            label="Your account is not a fee-based platform currently"
+            sx={{ mt: 2 }}
+          />
+        </RadioGroup>
       </Box>
     </Box>
   );

@@ -14,14 +14,21 @@ import {
 } from '@mui/material';
 import { FormikProps } from 'formik';
 import { CreateAgreementFormValues } from '../../../types';
-import { GET_HOUSEHOLD_MEMBERS } from '@graphql/queries';
+import { GET_HOUSEHOLD_MEMBERS, GET_CLIENT_ACCOUNTS } from '@graphql/queries';
 
 type Props = FormikProps<CreateAgreementFormValues>;
 
 const BillingDetailsStep: React.FC<Props> = ({ values, setFieldValue }) => {
   const [rawHouseholdMembers, setRawHouseholdMembers] = React.useState<any>(null);
+  const [rawAccounts, setRawAccounts] = React.useState<any>(null);
 
   const { data, loading, error } = useQuery(GET_HOUSEHOLD_MEMBERS, {
+    variables: { clientId: values.clientId },
+    skip: !values.clientId,
+    fetchPolicy: 'network-only',
+  });
+
+  const { data: accountsData, loading: accountsLoading } = useQuery(GET_CLIENT_ACCOUNTS, {
     variables: { clientId: values.clientId },
     skip: !values.clientId,
     fetchPolicy: 'network-only',
@@ -38,9 +45,26 @@ const BillingDetailsStep: React.FC<Props> = ({ values, setFieldValue }) => {
     }
   }, [loading]);
 
-  const householdMembers = rawHouseholdMembers || data?.householdMembers || [];
+  React.useEffect(() => {
+    if (!accountsLoading) {
+      import('../../../mocks/mockStore').then(({ getMockClientAccounts }) => {
+        const mockData = getMockClientAccounts();
+        if (mockData) {
+          setRawAccounts(mockData);
+        }
+      });
+    }
+  }, [accountsLoading]);
 
-  if (loading) {
+  const householdMembers = rawHouseholdMembers || data?.householdMembers || [];
+  const clientAccounts = rawAccounts || accountsData?.clientAccounts || [];
+  
+  // Filter to only show selected accounts
+  const selectedAccountsData = clientAccounts.filter((acc: any) => 
+    values.selectedAccounts?.includes(acc.id)
+  );
+
+  if (loading || accountsLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
         <CircularProgress />
@@ -106,7 +130,7 @@ const BillingDetailsStep: React.FC<Props> = ({ values, setFieldValue }) => {
           size="small"
         >
           <MenuItem value="individual">Bill all accounts individually</MenuItem>
-          <MenuItem value="combined">Bill all accounts together</MenuItem>
+          <MenuItem value="household">Bill all accounts together</MenuItem>
         </TextField>
       </Box>
 
@@ -162,9 +186,9 @@ const BillingDetailsStep: React.FC<Props> = ({ values, setFieldValue }) => {
                       <Typography variant="body2" color="text.secondary">
                         {member.relation}
                       </Typography>
-                      {member.accounts && member.accounts.length > 0 && (
+                      {selectedAccountsData.length > 0 && (
                         <Typography variant="caption" color="text.secondary">
-                          Accounts: {member.accounts.map((account: any) => account.accountNumber).join(', ')}
+                          Accounts: {selectedAccountsData.map((account: any) => account.accountNumber).join(', ')}
                         </Typography>
                       )}
                     </Box>

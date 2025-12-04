@@ -57,8 +57,10 @@ interface AgreementWizardProps {
   initialValues: CreateAgreementFormValues;
   onSubmit: (values: CreateAgreementFormValues, formikBag?: any) => Promise<void>;
   onCancel: () => void;
+  onSaveDraft?: (values: CreateAgreementFormValues) => Promise<void>;
   submitButtonText?: string;
   submitting?: boolean;
+  savingDraft?: boolean;
 }
 
 const AgreementWizard: React.FC<AgreementWizardProps> = ({
@@ -67,8 +69,10 @@ const AgreementWizard: React.FC<AgreementWizardProps> = ({
   initialValues,
   onSubmit,
   onCancel,
+  onSaveDraft,
   submitButtonText = 'Submit Agreement',
   submitting = false,
+  savingDraft = false,
 }) => {
   const [activeStep, setActiveStep] = useState(0);
 
@@ -256,13 +260,19 @@ const AgreementWizard: React.FC<AgreementWizardProps> = ({
                       Cancel
                     </Button>
                     <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Button
-                        type="button"
-                        variant="text"
-                        sx={{ textTransform: 'none', color: '#1976d2' }}
-                      >
-                        Save Draft
-                      </Button>
+                      {onSaveDraft && (
+                        <Button
+                          type="button"
+                          variant="text"
+                          disabled={savingDraft || submitting}
+                          onClick={async () => {
+                            await onSaveDraft(formikProps.values);
+                          }}
+                          sx={{ textTransform: 'none', color: '#1976d2' }}
+                        >
+                          {savingDraft ? 'Saving...' : 'Save Draft'}
+                        </Button>
+                      )}
                       <Button
                         type="button"
                         disabled={activeStep === 0}

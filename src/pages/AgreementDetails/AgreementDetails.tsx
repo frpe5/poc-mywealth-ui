@@ -18,6 +18,7 @@ import {
 import { GET_AGREEMENT_BY_ID } from '@graphql/queries';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
 import AgreementDetailsView from '@/components/AgreementDetailsView';
+import { AgreementStatus } from '../../types';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -102,13 +103,15 @@ const AgreementDetails: React.FC = () => {
             Agreement: {agreement.agreementNumber}
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<EditIcon />}
-          onClick={handleModify}
-        >
-          Modify Agreement
-        </Button>
+        {agreement.status !== AgreementStatus.PENDING_APPROVAL && (
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={handleModify}
+          >
+            Modify Agreement
+          </Button>
+        )}
       </Box>
 
       <Paper sx={{ p: 3 }}>

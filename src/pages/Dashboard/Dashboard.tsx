@@ -23,6 +23,11 @@ const Dashboard: React.FC = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
+  // Initialize filters based on the default tab (Pending)
+  React.useEffect(() => {
+    setFilters({ ...filters, status: [AgreementStatus.PENDING_APPROVAL] });
+  }, []); // Only run once on mount
+
   const { data: statsData, loading: statsLoading } = useQuery(GET_DASHBOARD_STATS, {
     fetchPolicy: 'network-only',
   });
@@ -81,11 +86,11 @@ const Dashboard: React.FC = () => {
     
     // Apply status filter based on tab
     const statusFilters: { [key: number]: AgreementStatus[] | undefined } = {
-      0: undefined, // All
-      1: [AgreementStatus.ACTIVE],
-      2: [AgreementStatus.PENDING_APPROVAL],
-      3: [AgreementStatus.DRAFT],
-      4: [AgreementStatus.EXPIRED, AgreementStatus.TERMINATED],
+      0: [AgreementStatus.PENDING_APPROVAL], // Pending
+      1: [AgreementStatus.ACTIVE], // Active
+      2: [AgreementStatus.DRAFT], // Drafts
+      3: [AgreementStatus.EXPIRED, AgreementStatus.TERMINATED], // Deleted
+      4: undefined, // All
     };
     
     setFilters({ ...filters, status: statusFilters[newValue] });

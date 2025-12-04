@@ -271,6 +271,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-PREMIUM-001',
     selectedAccounts: ['ACC001', 'ACC002'], // RRSP and TFSA
     selectedPolicyId: '1', // AAP-001
+    billingFrequency: 'Monthly',
+    billingStartDate: daysAgo(180),
+    billingAccount: 'individual',
+    selectedHouseholdMembers: ['HH001'], // Jane Smith (Spouse)
+    programType: 'Premium Wealth Management',
+    feeType: 'Dynamic',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 125000,
+    totalHouseholdBillableAssets: 245000,
+    programFeeType: 'Dynamic',
+    feeSchedule: 'UMOB',
+    integrationPeriod: "At the portfolio manager's discretion",
+    purposeOfAgreement: 'Establish a myWealth Unified agreement',
     products: [
       {
         id: 'AP001',
@@ -315,8 +328,21 @@ export const mockAgreements: Agreement[] = [
     advisorName: 'John Advisor',    clientRoot: 'SJ002',
     iaCode: 'IA-5678',
     feeGroup: 'FG-STANDARD-002',
-    selectedAccounts: ['ACC021'], // Client 2 account
+    selectedAccounts: ['ACC011'], // Client 2 RRSP
     selectedPolicyId: '2', // AAP-002
+    billingFrequency: 'Quarterly',
+    billingStartDate: daysAgo(150),
+    billingAccount: 'individual',
+    selectedHouseholdMembers: ['HH003'], // Marc Johnson (Spouse)
+    programType: 'Investment Advisory',
+    feeType: 'Fixed',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 85000,
+    totalHouseholdBillableAssets: 180000,
+    programFeeType: 'Fixed',
+    feeSchedule: 'UMOS',
+    integrationPeriod: '30 days',
+    purposeOfAgreement: 'Wealth accumulation',
     products: [
       {
         id: 'AP002',
@@ -359,6 +385,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-CORP-003',
     selectedAccounts: ['ACC031', 'ACC032'], // Both corporate accounts
     selectedPolicyId: '3', // AAP-003
+    billingFrequency: 'Monthly',
+    billingStartDate: daysAgo(200),
+    billingAccount: 'household',
+    selectedHouseholdMembers: [],
+    programType: 'Corporate Wealth Management',
+    feeType: 'Dynamic',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 275000,
+    totalHouseholdBillableAssets: 275000,
+    programFeeType: 'Dynamic',
+    feeSchedule: 'UMOB',
+    integrationPeriod: "At the portfolio manager's discretion",
+    purposeOfAgreement: 'Establish a myWealth Unified agreement',
     products: [
       {
         id: 'AP003',
@@ -408,6 +447,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-RETIRE-004',
     selectedAccounts: ['ACC041'], // RRSP for retirement
     selectedPolicyId: '1', // AAP-001
+    billingFrequency: 'Annual',
+    billingStartDate: daysAgo(5),
+    billingAccount: 'individual',
+    selectedHouseholdMembers: ['HH004', 'HH005'], // Lisa Brown (Spouse) and Emma Brown (Child)
+    programType: 'Retirement Planning',
+    feeType: 'Dynamic',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 450000,
+    totalHouseholdBillableAssets: 650000,
+    programFeeType: 'Dynamic',
+    feeSchedule: 'UMOB',
+    integrationPeriod: '60 days',
+    purposeOfAgreement: 'Retirement planning',
     products: [
       {
         id: 'AP005',
@@ -450,6 +502,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-UNIFIED-005',
     selectedAccounts: ['ACC051'], // Emily's TFSA account shown in wizard
     selectedPolicyId: '4', // AAP-004
+    billingFrequency: 'Monthly',
+    billingStartDate: '2026-01-02',
+    billingAccount: 'household',
+    selectedHouseholdMembers: ['HH006'], // James Davis (Partner)
+    programType: 'Wealth Management - Unified',
+    feeType: 'Dynamic',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 50000,
+    totalHouseholdBillableAssets: 50000,
+    programFeeType: 'Dynamic',
+    feeSchedule: 'Standard',
+    integrationPeriod: "At the portfolio manager's discretion",
+    purposeOfAgreement: 'Estate planning',
     products: [],
     terms: [],
     documents: [],
@@ -475,6 +540,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-INVEST-006',
     selectedAccounts: ['ACC061', 'ACC062'], // Corporate and Executive RRSP
     selectedPolicyId: '2', // AAP-002
+    billingFrequency: 'Quarterly',
+    billingStartDate: daysAgo(120),
+    billingAccount: 'household',
+    selectedHouseholdMembers: [],
+    programType: 'Corporate Investment',
+    feeType: 'Fixed',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 320000,
+    totalHouseholdBillableAssets: 420000,
+    programFeeType: 'Fixed',
+    feeSchedule: 'UMOS',
+    integrationPeriod: '90 days',
+    purposeOfAgreement: 'Wealth accumulation',
     products: [
       {
         id: 'AP006',
@@ -524,6 +602,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-ESTATE-007',
     selectedAccounts: ['ACC071'], // Client 7 account
     selectedPolicyId: '3', // AAP-003
+    billingFrequency: 'Semi-Annual',
+    billingStartDate: daysAgo(90),
+    billingAccount: 'household',
+    selectedHouseholdMembers: ['HH007', 'HH008'], // Sandra Wilson (Spouse) and Alex Wilson (Child)
+    programType: 'Estate Planning',
+    feeType: 'Dynamic',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 580000,
+    totalHouseholdBillableAssets: 720000,
+    programFeeType: 'Dynamic',
+    feeSchedule: 'UMOB',
+    integrationPeriod: "At the portfolio manager's discretion",
+    purposeOfAgreement: 'Estate planning',
     products: [
       {
         id: 'AP008',
@@ -565,6 +656,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-BASIC-008',
     selectedAccounts: ['ACC081'], // RRSP only
     selectedPolicyId: '4', // AAP-004
+    billingFrequency: 'Monthly',
+    billingStartDate: daysAgo(60),
+    billingAccount: 'individual',
+    selectedHouseholdMembers: ['HH009'], // Carlos Martinez (Spouse)
+    programType: 'Basic Wealth Management',
+    feeType: 'Fixed',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 195000,
+    totalHouseholdBillableAssets: 195000,
+    programFeeType: 'Fixed',
+    feeSchedule: 'UMOS',
+    integrationPeriod: '30 days',
+    purposeOfAgreement: 'Wealth accumulation',
     products: [
       {
         id: 'AP009',
@@ -607,6 +711,19 @@ export const mockAgreements: Agreement[] = [
     iaCode: 'IA-4567',
     feeGroup: 'FG-CORP-009',
     selectedPolicyId: '1', // AAP-001
+    billingFrequency: 'Monthly',
+    billingStartDate: daysAgo(300),
+    billingAccount: 'individual',
+    selectedHouseholdMembers: [],
+    programType: 'Corporate Wealth Management',
+    feeType: 'Dynamic',
+    currentFeeAccount: 'no',
+    clientBillableAssets: 410000,
+    totalHouseholdBillableAssets: 550000,
+    programFeeType: 'Dynamic',
+    feeSchedule: 'UMOB',
+    integrationPeriod: '60 days',
+    purposeOfAgreement: 'Establish a myWealth Unified agreement',
     products: [
       {
         id: 'AP010',
@@ -648,6 +765,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-INVEST-010',
     selectedAccounts: ['ACC101', 'ACC102'], // Both RRSP and TFSA
     selectedPolicyId: '2', // AAP-002
+    billingFrequency: 'Quarterly',
+    billingStartDate: daysAgo(45),
+    billingAccount: 'household',
+    selectedHouseholdMembers: ['HH010', 'HH011'], // Patricia Taylor (Spouse) and Sophie Taylor (Child)
+    programType: 'Investment Advisory',
+    feeType: 'Dynamic',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 230000,
+    totalHouseholdBillableAssets: 350000,
+    programFeeType: 'Dynamic',
+    feeSchedule: 'Standard',
+    integrationPeriod: '90 days',
+    purposeOfAgreement: 'Retirement planning',
     products: [
       {
         id: 'AP011',
@@ -697,6 +827,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-LEGACY-011',
     selectedAccounts: ['ACC003'], // Cash account
     selectedPolicyId: '1', // AAP-001
+    billingFrequency: 'Annual',
+    billingStartDate: daysAgo(550),
+    billingAccount: 'individual',
+    selectedHouseholdMembers: [],
+    programType: 'Financial Planning',
+    feeType: 'Fixed',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 75000,
+    totalHouseholdBillableAssets: 75000,
+    programFeeType: 'Fixed',
+    feeSchedule: 'UMOS',
+    integrationPeriod: "At the portfolio manager's discretion",
+    purposeOfAgreement: 'Wealth accumulation',
     products: [
       {
         id: 'AP013',
@@ -731,6 +874,19 @@ export const mockAgreements: Agreement[] = [
     feeGroup: 'FG-RETIRE-012',
     selectedAccounts: ['ACC011', 'ACC012'], // Both RRSP and TFSA for retirement
     selectedPolicyId: '3', // AAP-003
+    billingFrequency: 'Monthly',
+    billingStartDate: daysAgo(30),
+    billingAccount: 'household',
+    selectedHouseholdMembers: ['HH003'], // Marc Johnson (Spouse)
+    programType: 'Retirement Planning',
+    feeType: 'Dynamic',
+    currentFeeAccount: 'yes',
+    clientBillableAssets: 155000,
+    totalHouseholdBillableAssets: 155000,
+    programFeeType: 'Dynamic',
+    feeSchedule: 'UMOB',
+    integrationPeriod: '30 days',
+    purposeOfAgreement: 'Establish a myWealth Unified agreement',
     products: [
       {
         id: 'AP014',
@@ -1337,6 +1493,31 @@ export const mockProgramFees = {
     { tier: '$600,000 to $1,000,000', rate: 0.90 },
     { tier: '$1,000,000 to $2,500,000', rate: 0.75 },
     { tier: 'assets exceeding $2,500,000', rate: 0.70 },
+  ],
+};
+
+// Fee schedules data
+export const feeSchedules: { [key: string]: { tier: string; rate: number }[] } = {
+  UMOB: [
+    { tier: 'first $250,000', rate: 1.30 },
+    { tier: '$250,000 to $600,000', rate: 1.00 },
+    { tier: '$600,000 to $1,000,000', rate: 0.90 },
+    { tier: '$1,000,000 to $2,500,000', rate: 0.75 },
+    { tier: 'assets exceeding $2,500,000', rate: 0.70 },
+  ],
+  UMOS: [
+    { tier: 'first $250,000', rate: 1.25 },
+    { tier: '$250,000 to $500,000', rate: 0.95 },
+    { tier: '$500,000 to $1,000,000', rate: 0.85 },
+    { tier: '$1,000,000 to $3,000,000', rate: 0.70 },
+    { tier: 'assets exceeding $3,000,000', rate: 0.65 },
+  ],
+  Standard: [
+    { tier: 'first $250,000', rate: 1.50 },
+    { tier: '$250,000 to $500,000', rate: 1.25 },
+    { tier: '$500,000 to $1,000,000', rate: 1.00 },
+    { tier: '$1,000,000 to $2,000,000', rate: 0.85 },
+    { tier: 'assets exceeding $2,000,000', rate: 0.75 },
   ],
 };
 

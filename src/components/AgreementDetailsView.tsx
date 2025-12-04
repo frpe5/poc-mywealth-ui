@@ -17,7 +17,8 @@ import {
 import { Description as DescriptionIcon } from '@mui/icons-material';
 import { Agreement } from '../types';
 import { format } from 'date-fns';
-import { GET_CLIENT, GET_HOUSEHOLD_MEMBERS, GET_ASSET_ALLOCATION_POLICIES, GET_PROGRAM_FEES } from '@graphql/queries';
+import { GET_CLIENT, GET_HOUSEHOLD_MEMBERS, GET_ASSET_ALLOCATION_POLICIES, GET_PROGRAM_FEES, GET_CLIENT_ACCOUNTS } from '@graphql/queries';
+import { feeSchedules } from '../mocks/mockData';
 
 interface AgreementDetailsViewProps {
   agreement: Agreement;
@@ -28,10 +29,18 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
   const [rawHousehold, setRawHousehold] = React.useState<any>(null);
   const [rawPolicies, setRawPolicies] = React.useState<any>(null);
   const [rawFees, setRawFees] = React.useState<any>(null);
+  const [rawAccounts, setRawAccounts] = React.useState<any>(null);
 
   // Fetch additional client details
   const { data: clientData, loading: clientLoading } = useQuery(GET_CLIENT, {
     variables: { id: agreement.clientId },
+    skip: !agreement.clientId,
+    fetchPolicy: 'network-only',
+  });
+
+  // Fetch client accounts
+  const { data: accountsData, loading: accountsLoading } = useQuery(GET_CLIENT_ACCOUNTS, {
+    variables: { clientId: agreement.clientId },
     skip: !agreement.clientId,
     fetchPolicy: 'network-only',
   });
@@ -98,14 +107,36 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
     }
   }, [feesLoading]);
 
+  React.useEffect(() => {
+    if (!accountsLoading) {
+      import('../mocks/mockStore').then(({ getMockClientAccounts }) => {
+        const mockData = getMockClientAccounts();
+        if (mockData) {
+          setRawAccounts(mockData);
+        }
+      });
+    }
+  }, [accountsLoading]);
+
   const client = rawClient || clientData?.client;
   const householdMembers = rawHousehold || householdData?.householdMembers || [];
   const allPolicies = rawPolicies || policiesData?.assetAllocationPolicies || [];
+  const clientAccounts = rawAccounts || accountsData?.clientAccounts || [];
+  
+  // Filter to show only selected accounts
+  const selectedAccountsData = clientAccounts.filter((acc: any) => 
+    agreement.selectedAccounts?.includes(acc.id)
+  );
   // Filter to show only the selected policy
   const policies = agreement.selectedPolicyId 
     ? allPolicies.filter((p: any) => p.id === agreement.selectedPolicyId)
     : allPolicies;
   const programFees = rawFees || feesData?.programFees;
+  
+  // Get fee rates based on agreement's fee schedule
+  const displayFeeRates = agreement.feeSchedule && feeSchedules[agreement.feeSchedule]
+    ? feeSchedules[agreement.feeSchedule]
+    : programFees?.feeRates || [];
   
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
@@ -116,7 +147,7 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
     }
   };
 
-  const isLoading = clientLoading || householdLoading || policiesLoading || feesLoading;
+  const isLoading = clientLoading || householdLoading || policiesLoading || feesLoading || accountsLoading;
 
   if (isLoading) {
     return (
@@ -242,25 +273,34 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12} md={6}>
             <Typography variant="caption" color="text.secondary">Frequency</Typography>
-            <Typography variant="body1">Monthly</Typography>
+            <Typography variant="body1">{agreement.billingFrequency || 'Not specified'}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="caption" color="text.secondary">Start Date</Typography>
-            <Typography variant="body1">{formatDate(agreement.startDate)}</Typography>
+            <Typography variant="body1">{formatDate(agreement.billingStartDate || agreement.startDate)}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="caption" color="text.secondary">Billing Account</Typography>
-            <Typography variant="body1">Bill all accounts individually</Typography>
+            <Typography variant="body1">
+              {agreement.billingAccount === 'individual' ? 'Bill all accounts individually' : 
+               agreement.billingAccount === 'household' ? 'Bill household jointly' : 
+               agreement.billingAccount || 'Not specified'}
+            </Typography>
           </Grid>
         </Grid>
 
         {/* Household Billing */}
-        {householdMembers && householdMembers.length > 0 && (
+        {agreement.selectedHouseholdMembers && agreement.selectedHouseholdMembers.length > 0 && householdMembers && householdMembers.length > 0 && (
           <Box sx={{ mt: 3 }}>
             <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
               Household Billing
             </Typography>
-            {householdMembers.map((member: any) => (
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              {agreement.selectedHouseholdMembers.length} household member(s) included
+            </Typography>
+            {householdMembers
+              .filter((member: any) => agreement.selectedHouseholdMembers?.includes(member.id))
+              .map((member: any) => (
               <Box key={member.id} sx={{ mb: 3, p: 2, bgcolor: '#f5f9ff', borderRadius: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Checkbox checked={true} disabled />
@@ -272,10 +312,10 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
                     $ {member.totalValue?.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </Typography>
                 </Box>
-                {member.accounts && member.accounts.length > 0 && (
+                {selectedAccountsData && selectedAccountsData.length > 0 && (
                   <Box sx={{ ml: 5 }}>
                     <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>Accounts</Typography>
-                    {member.accounts.map((acc: any) => (
+                    {selectedAccountsData.map((acc: any) => (
                       <Box key={acc.id} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                         <Checkbox checked={true} disabled size="small" />
                         <Typography variant="body2" sx={{ ml: 1, flex: 1 }}>
@@ -305,18 +345,18 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
             <Grid item xs={12} md={6}>
               <Typography variant="caption" color="text.secondary">Client Billable Assets in myWealth - Unified</Typography>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                $ {programFees.billableAssets?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '18,000.00'}
+                $ {(agreement.clientBillableAssets || programFees.billableAssets)?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="caption" color="text.secondary">Program Fee Type</Typography>
-              <Typography variant="body1">{programFees.feeType || 'Dynamic'}</Typography>
+              <Typography variant="body1">{agreement.programFeeType || programFees.feeType || 'Dynamic'}</Typography>
             </Grid>
           </Grid>
 
           <Box sx={{ mb: 3 }}>
             <Typography variant="caption" color="text.secondary">Fee Schedule</Typography>
-            <Typography variant="body1" sx={{ fontWeight: 600, mb: 2 }}>{programFees.feeSchedule || 'UMOS'}</Typography>
+            <Typography variant="body1" sx={{ fontWeight: 600, mb: 2 }}>{agreement.feeSchedule || programFees.feeSchedule || 'UMOB'}</Typography>
             
             <Table size="small">
               <TableHead>
@@ -326,8 +366,8 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
                 </TableRow>
               </TableHead>
               <TableBody>
-                {programFees.feeRates && programFees.feeRates.length > 0 ? (
-                  programFees.feeRates.map((rate: any, index: number) => (
+                {displayFeeRates.length > 0 ? (
+                  displayFeeRates.map((rate: any, index: number) => (
                     <TableRow key={index}>
                       <TableCell>% on {rate.tier}</TableCell>
                       <TableCell align="right">{rate.rate}%</TableCell>
@@ -365,7 +405,7 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
             <Grid item xs={12} md={6}>
               <Typography variant="caption" color="text.secondary">Internal Use Code:</Typography>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                {programFees.internalCode || 'UMOS'}
+                {agreement.feeSchedule || programFees.internalCode || programFees.feeSchedule || 'UMOB'}
               </Typography>
             </Grid>
           </Grid>
@@ -373,26 +413,26 @@ const AgreementDetailsView: React.FC<AgreementDetailsViewProps> = ({ agreement }
           <Box sx={{ mb: 2 }}>
             <Typography variant="caption" color="text.secondary">Total household billable assets in myWealth - All inclusive:</Typography>
             <Typography variant="body1" sx={{ fontWeight: 600 }}>
-              $ {programFees.totalBillableAssets?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '113,000.00'}
+              $ {(agreement.totalHouseholdBillableAssets || programFees.totalBillableAssets)?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}
             </Typography>
           </Box>
 
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <Typography variant="caption" color="text.secondary">Asset Allocation Policy Integration Period</Typography>
-              <Typography variant="body1">At the portfolio manager's discretion</Typography>
+              <Typography variant="body1">{agreement.integrationPeriod || "At the portfolio manager's discretion"}</Typography>
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="caption" color="text.secondary">Purpose of Agreement</Typography>
-              <Typography variant="body1">Establish a myWealth Unified agreement</Typography>
+              <Typography variant="body1">{agreement.purposeOfAgreement || 'Establish a myWealth Unified agreement'}</Typography>
             </Grid>
           </Grid>
 
-          {programFees.otherFeeAccount && (
+          {(agreement.currentFeeAccount === 'yes' || programFees.otherFeeAccount) && (
             <Box sx={{ mt: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
               <Typography variant="caption" color="text.secondary">Other Fee Based Account</Typography>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                {programFees.otherFeeAccount}
+                {agreement.feeType || programFees.otherFeeAccount || 'myWealth - Advisory'}
               </Typography>
             </Box>
           )}

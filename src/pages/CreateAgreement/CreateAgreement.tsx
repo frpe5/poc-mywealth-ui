@@ -10,6 +10,7 @@ const CreateAgreement: React.FC = () => {
   const nav = useAppNavigation();
   const { addNotification } = useAppContext();
   const [createAgreement, { loading: submitting }] = useMutation(CREATE_AGREEMENT);
+  const [savingDraft, setSavingDraft] = React.useState(false);
 
   const initialValues: CreateAgreementFormValues = {
     agreementType: '',
@@ -26,6 +27,12 @@ const CreateAgreement: React.FC = () => {
     programType: 'Premium Wealth Management',
     feeType: '',
     currentFeeAccount: 'yes',
+    clientBillableAssets: 0,
+    totalHouseholdBillableAssets: 0,
+    programFeeType: '',
+    feeSchedule: '',
+    integrationPeriod: '',
+    purposeOfAgreement: '',
     products: [],
     terms: [],
     documents: [],
@@ -41,6 +48,21 @@ const CreateAgreement: React.FC = () => {
             clientId: values.clientId,
             startDate: values.startDate,
             endDate: values.endDate || null,
+            selectedAccounts: values.selectedAccounts,
+            selectedPolicyId: values.selectedPolicyId,
+            billingFrequency: values.billingFrequency,
+            billingStartDate: values.billingStartDate,
+            billingAccount: values.billingAccount,
+            selectedHouseholdMembers: values.selectedHouseholdMembers,
+            programType: values.programType,
+            feeType: values.feeType,
+            currentFeeAccount: values.currentFeeAccount,
+            clientBillableAssets: values.clientBillableAssets,
+            totalHouseholdBillableAssets: values.totalHouseholdBillableAssets,
+            programFeeType: values.programFeeType,
+            feeSchedule: values.feeSchedule,
+            integrationPeriod: values.integrationPeriod,
+            purposeOfAgreement: values.purposeOfAgreement,
             products: values.products.map((p: any) => ({
               productCode: p.productCode,
               productName: p.productName,
@@ -78,6 +100,71 @@ const CreateAgreement: React.FC = () => {
     }
   };
 
+  const handleSaveDraft = async (values: CreateAgreementFormValues) => {
+    setSavingDraft(true);
+    try {
+      const { data } = await createAgreement({
+        variables: {
+          input: {
+            agreementType: values.agreementType || 'Draft Agreement',
+            clientId: values.clientId || 'DRAFT',
+            startDate: values.startDate,
+            endDate: values.endDate || null,
+            selectedAccounts: values.selectedAccounts,
+            selectedPolicyId: values.selectedPolicyId,
+            billingFrequency: values.billingFrequency,
+            billingStartDate: values.billingStartDate,
+            billingAccount: values.billingAccount,
+            selectedHouseholdMembers: values.selectedHouseholdMembers,
+            programType: values.programType,
+            feeType: values.feeType,
+            currentFeeAccount: values.currentFeeAccount,
+            clientBillableAssets: values.clientBillableAssets,
+            totalHouseholdBillableAssets: values.totalHouseholdBillableAssets,
+            programFeeType: values.programFeeType,
+            feeSchedule: values.feeSchedule,
+            integrationPeriod: values.integrationPeriod,
+            purposeOfAgreement: values.purposeOfAgreement,
+            products: values.products.map((p: any) => ({
+              productCode: p.productCode,
+              productName: p.productName,
+              quantity: p.quantity,
+              unitPrice: p.unitPrice,
+            })),
+            terms: values.terms.map((t: any) => ({
+              termType: t.termType,
+              value: t.value,
+              description: t.description,
+            })),
+            documents: values.documents.map((d: File) => ({
+              documentName: d.name,
+              documentType: d.type,
+              documentUrl: '',
+            })),
+            comments: values.comments,
+            status: 'DRAFT',
+          },
+        },
+      });
+
+      addNotification({
+        type: NotificationType.AGREEMENT_CREATED,
+        message: `Draft saved successfully`,
+        severity: 'success',
+      });
+
+      nav.goToDashboard();
+    } catch (error) {
+      addNotification({
+        type: NotificationType.AGREEMENT_CREATED,
+        message: `Failed to save draft: ${error}`,
+        severity: 'error',
+      });
+    } finally {
+      setSavingDraft(false);
+    }
+  };
+
   return (
     <AgreementWizard
       title="Create a New Agreement"
@@ -85,8 +172,10 @@ const CreateAgreement: React.FC = () => {
       initialValues={initialValues}
       onSubmit={handleSubmit}
       onCancel={() => nav.goToDashboard()}
+      onSaveDraft={handleSaveDraft}
       submitButtonText="Submit Agreement"
       submitting={submitting}
+      savingDraft={savingDraft}
     />
   );
 };

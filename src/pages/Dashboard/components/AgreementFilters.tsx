@@ -21,10 +21,17 @@ interface AgreementFiltersProps {
 
 const agreementTypes = [
   'Wealth Management',
+  'Wealth Management - Unified',
   'Investment Advisory',
   'Portfolio Management',
   'Financial Planning',
+  'Retirement Planning',
+  'Estate Planning',
   'Asset Management',
+  'Corporate Wealth Management',
+  'Corporate Investment',
+  'Discretionary Management',
+  'Advisory Services',
 ];
 
 const AgreementFilters: React.FC<AgreementFiltersProps> = ({

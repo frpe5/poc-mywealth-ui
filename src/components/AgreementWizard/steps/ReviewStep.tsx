@@ -129,28 +129,52 @@ const ReviewStep: React.FC<Props> = ({ values }) => {
         <Divider sx={{ mb: 2 }} />
         {values.programType ? (
           <>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 2 }}>
-                  <Typography variant="caption" color="text.secondary">Program Type</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 600 }}>{values.programType}</Typography>
+                  <Typography variant="caption" color="text.secondary">Client Billable Assets</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                    ${values.clientBillableAssets?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}
+                  </Typography>
                 </Box>
-                {values.feeType && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Fee Type</Typography>
-                    <Typography variant="body1">{values.feeType}</Typography>
-                  </Box>
-                )}
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="caption" color="text.secondary">Total Household Billable Assets</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                    ${values.totalHouseholdBillableAssets?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}
+                  </Typography>
+                </Box>
               </Grid>
               <Grid item xs={12} md={6}>
-                {values.currentFeeAccount && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Current Fee Account</Typography>
-                    <Typography variant="body1">{values.currentFeeAccount === 'yes' ? 'Yes' : 'No'}</Typography>
-                  </Box>
-                )}
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="caption" color="text.secondary">Program Fee Type</Typography>
+                  <Typography variant="body1">{values.programFeeType || 'Not specified'}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="caption" color="text.secondary">Fee Schedule</Typography>
+                  <Typography variant="body1">{values.feeSchedule || 'Not specified'}</Typography>
+                </Box>
               </Grid>
             </Grid>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
+              <Grid item xs={12} md={6}>
+                <Box>
+                  <Typography variant="caption" color="text.secondary">Integration Period</Typography>
+                  <Typography variant="body1">{values.integrationPeriod || 'Not specified'}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box>
+                  <Typography variant="caption" color="text.secondary">Purpose of Agreement</Typography>
+                  <Typography variant="body1">{values.purposeOfAgreement || 'Not specified'}</Typography>
+                </Box>
+              </Grid>
+            </Grid>
+            {values.currentFeeAccount === 'yes' && values.feeType && (
+              <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                <Typography variant="caption" color="text.secondary">Current Fee-Based Account</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 600 }}>{values.feeType}</Typography>
+              </Box>
+            )}
           </>
         ) : (
           <Typography color="text.secondary">No program fee selected</Typography>

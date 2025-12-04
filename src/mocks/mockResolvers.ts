@@ -326,20 +326,39 @@ export const mockResolvers = {
         clientName: client.name,
         clientId: input.clientId,
         agreementType: input.agreementType,
-        status: AgreementStatus.DRAFT,
+        status: input.status === 'DRAFT' ? AgreementStatus.DRAFT : AgreementStatus.PENDING_APPROVAL,
         startDate: input.startDate,
         endDate: input.endDate,
-        totalAmount: input.products.reduce(
+        selectedAccounts: input.selectedAccounts || [],
+        selectedPolicyId: input.selectedPolicyId || '',
+        selectedHouseholdMembers: input.selectedHouseholdMembers || [],
+        billingFrequency: input.billingFrequency || '',
+        billingStartDate: input.billingStartDate || input.startDate,
+        billingAccount: input.billingAccount || 'individual',
+        programType: input.programType || '',
+        feeType: input.feeType || '',
+        currentFeeAccount: input.currentFeeAccount || '',
+        clientBillableAssets: input.clientBillableAssets || 0,
+        totalHouseholdBillableAssets: input.totalHouseholdBillableAssets || 0,
+        programFeeType: input.programFeeType || '',
+        feeSchedule: input.feeSchedule || '',
+        integrationPeriod: input.integrationPeriod || '',
+        purposeOfAgreement: input.purposeOfAgreement || '',
+        clientRoot: client.clientRoot || '',
+        iaCode: client.iaCode || '',
+        feeGroup: `FG-${input.programType?.substring(0, 6).toUpperCase() || 'WEALTH'}-${agreementCounter}`,
+        totalAmount: input.products?.reduce(
           (sum: number, p: any) => sum + p.unitPrice * p.quantity,
           0
-        ),
+        ) || 0,
         currency: 'CAD',
         description: input.comments || '',
+        comments: input.comments || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         createdBy: 'current.user@mywealth.com',
         advisorName: 'Current User',
-        products: input.products.map((p: any) => ({
+        products: input.products?.map((p: any) => ({
           id: generateId('AP', productCounter++),
           productName: p.productName,
           productCode: p.productCode,
@@ -347,13 +366,13 @@ export const mockResolvers = {
           unitPrice: p.unitPrice,
           totalPrice: p.unitPrice * p.quantity,
           description: p.description,
-        })),
-        terms: input.terms.map((t: any) => ({
+        })) || [],
+        terms: input.terms?.map((t: any) => ({
           id: generateId('AT', termCounter++),
           termType: t.termType,
           value: t.value,
           description: t.description,
-        })),
+        })) || [],
         documents: [],
       };
 
@@ -410,20 +429,23 @@ export const mockResolvers = {
     createModificationRequest: (_: any, { input }: any) => {
       maybeThrowError('createModificationRequest');
 
-      const agreement = mockAgreements.find((a) => a.id === input.agreementId);
-      if (!agreement) {
+      const agreementIndex = mockAgreements.findIndex((a) => a.id === input.agreementId);
+      if (agreementIndex === -1) {
         throw new GraphQLError(
           `Agreement with id ${input.agreementId} not found`,
           { extensions: { code: 'NOT_FOUND' } }
         );
       }
 
+      const agreement = mockAgreements[agreementIndex];
+      const isDraft = input.status === 'DRAFT';
+
       const newRequest: ModificationRequest = {
         id: generateId('MR', modificationRequestCounter++),
         agreementId: input.agreementId,
         agreement,
         requestType: input.requestType,
-        status: ModificationRequestStatus.PENDING,
+        status: isDraft ? ModificationRequestStatus.DRAFT : ModificationRequestStatus.PENDING,
         requestedBy: 'current.user@mywealth.com',
         requestedAt: new Date().toISOString(),
         comments: input.comments,
@@ -431,6 +453,20 @@ export const mockResolvers = {
       };
 
       mockModificationRequests.push(newRequest);
+
+      // If not a draft, update the agreement status to PENDING_APPROVAL
+      if (!isDraft) {
+        mockAgreements[agreementIndex] = {
+          ...agreement,
+          status: AgreementStatus.PENDING_APPROVAL,
+          updatedAt: new Date().toISOString(),
+          modifiedBy: 'current.user@mywealth.com',
+        };
+        
+        // Clear cache so queries refetch fresh data
+        clearAgreementsCache();
+      }
+
       return newRequest;
     },
 
