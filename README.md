@@ -165,7 +165,7 @@ Start the development server:
 npm start
 ```
 
-The application will open at `http://localhost:3001`
+The application will open at `http://localhost:3000`
 
 ### Build (Standalone Mode)
 
@@ -317,14 +317,14 @@ npm run build
 3. Update host app's remote URL:
 ```javascript
 remotes: {
-  agreementApp: 'agreementApp@https://cdn.myapp.com/agreement-ui/remoteEntry.js'
+  agreementApp: 'agreementApp@https://cdn.mywealth.com/agreement-ui/remoteEntry.js'
 }
 ```
 
 ### Development Server URLs
 
-- **Standalone App**: `http://localhost:3001`
-- **Remote Entry**: `http://localhost:3001/remoteEntry.js`
+- **Standalone App**: `http://localhost:3000`
+- **Remote Entry**: `http://localhost:3000/remoteEntry.js`
 - **BFF GraphQL**: `http://localhost:8080/graphql`
 
 ### Linting
@@ -471,11 +471,7 @@ This application is fully configured with **Webpack Module Federation** for seam
    - Use fragments (CLIENT_FRAGMENT, CLIENT_MINIMAL_FRAGMENT) for DRY
    - Add pagination limits to search queries
 5. Write meaningful commit messages
-6. Follow the existing code structure and patterns
-2. Use TypeScript for all new files
-3. Add proper type definitions
-4. Write meaningful commit messages
-5. Test thoroughly before submitting
+6. Test thoroughly before submitting
 
 ## License
 

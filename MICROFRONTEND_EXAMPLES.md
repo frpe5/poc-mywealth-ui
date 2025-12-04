@@ -22,7 +22,7 @@ module.exports = {
     new ModuleFederationPlugin({
       name: 'myWealthPortal',
       remotes: {
-        agreementApp: 'agreementApp@http://localhost:3001/remoteEntry.js',
+        agreementApp: 'agreementApp@http://localhost:3000/remoteEntry.js',
       },
       shared: {
         react: { 
@@ -230,7 +230,7 @@ declare module 'agreementApp/Dashboard' {
 ```javascript
 // Development
 remotes: {
-  agreementApp: 'agreementApp@http://localhost:3001/remoteEntry.js'
+  agreementApp: 'agreementApp@http://localhost:3000/remoteEntry.js'
 }
 
 // Staging
@@ -302,7 +302,7 @@ const LoadingFallback = () => (
 
 **Solution**: 
 1. Check network tab for 404 on `remoteEntry.js`
-2. Verify the Agreement UI dev server is running on port 3001
+2. Verify the Agreement UI dev server is running on port 3000
 3. Check CORS configuration if crossing origins
 
 ### Issue: Type errors in host app
@@ -312,7 +312,7 @@ const LoadingFallback = () => (
 ## Next Steps
 
 1. Start Agreement UI microfrontend: `cd agreement-ui && npm start`
-2. Verify `http://localhost:3001/remoteEntry.js` is accessible
+2. Verify `http://localhost:3000/remoteEntry.js` is accessible
 3. Configure your host app's webpack.config.js
 4. Import and use the remote modules
 5. Test in development before deploying to production
