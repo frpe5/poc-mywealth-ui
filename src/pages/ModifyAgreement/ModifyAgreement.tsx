@@ -115,9 +115,10 @@ const ModifyAgreement: React.FC = () => {
 
       nav.goToDashboard();
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       addNotification({
         type: NotificationType.MODIFICATION_REQUESTED,
-        message: `Failed to submit modification request: ${error}`,
+        message: `Failed to submit modification request: ${errorMessage}`,
         severity: 'error',
       });
     }
@@ -147,9 +148,10 @@ const ModifyAgreement: React.FC = () => {
 
       nav.goToDashboard();
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       addNotification({
         type: NotificationType.MODIFICATION_REQUESTED,
-        message: `Failed to save draft: ${error}`,
+        message: `Failed to save draft: ${errorMessage}`,
         severity: 'error',
       });
     } finally {

@@ -55,7 +55,7 @@ interface AgreementWizardProps {
   title: string;
   referenceNumber: string;
   initialValues: CreateAgreementFormValues;
-  onSubmit: (values: CreateAgreementFormValues, formikBag?: any) => Promise<void>;
+  onSubmit: (values: CreateAgreementFormValues) => Promise<void>;
   onCancel: () => void;
   onSaveDraft?: (values: CreateAgreementFormValues) => Promise<void>;
   submitButtonText?: string;
@@ -86,16 +86,13 @@ const AgreementWizard: React.FC<AgreementWizardProps> = ({
     setActiveStep((prevStep) => prevStep - 1);
   };
 
-  const handleSubmit = async (values: CreateAgreementFormValues, formikBag?: any) => {
+  const handleSubmit = async (values: CreateAgreementFormValues) => {
     // Prevent submission if not on the final step
     if (activeStep !== steps.length - 1) {
-      if (formikBag) {
-        formikBag.setSubmitting(false);
-      }
       return;
     }
 
-    await onSubmit(values, formikBag);
+    await onSubmit(values);
   };
 
   const getStepContent = (step: number, formikProps: any) => {
@@ -232,9 +229,8 @@ const AgreementWizard: React.FC<AgreementWizardProps> = ({
             <Formik
               initialValues={initialValues}
               validationSchema={currentValidationSchema}
-              onSubmit={(values, formikBag) => {
+              onSubmit={() => {
                 // No-op: submission is handled manually via button click
-                formikBag.setSubmitting(false);
               }}
               validateOnChange={true}
               validateOnBlur={true}
@@ -265,9 +261,7 @@ const AgreementWizard: React.FC<AgreementWizardProps> = ({
                           type="button"
                           variant="text"
                           disabled={savingDraft || submitting}
-                          onClick={async () => {
-                            await onSaveDraft(formikProps.values);
-                          }}
+                          onClick={() => onSaveDraft(formikProps.values)}
                           sx={{ textTransform: 'none', color: '#1976d2' }}
                         >
                           {savingDraft ? 'Saving...' : 'Save Draft'}
@@ -287,9 +281,7 @@ const AgreementWizard: React.FC<AgreementWizardProps> = ({
                           type="button"
                           variant="contained"
                           disabled={submitting || !formikProps.isValid}
-                          onClick={async () => {
-                            await handleSubmit(formikProps.values, formikProps);
-                          }}
+                          onClick={() => handleSubmit(formikProps.values)}
                           sx={{ textTransform: 'none' }}
                         >
                           {submitting ? 'Submitting...' : submitButtonText}

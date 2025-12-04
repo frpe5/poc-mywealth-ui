@@ -40,7 +40,7 @@ const AgreementDetails: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState(0);
   const [rawAgreement, setRawAgreement] = React.useState<any>(null);
 
-  const { data, loading, error, refetch } = useQuery(GET_AGREEMENT_BY_ID, {
+  const { data, loading, error } = useQuery(GET_AGREEMENT_BY_ID, {
     variables: { id },
     skip: !id,
     fetchPolicy: 'network-only',

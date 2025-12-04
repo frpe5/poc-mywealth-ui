@@ -92,9 +92,10 @@ const CreateAgreement: React.FC = () => {
 
       nav.goToAgreementDetails(data.createAgreement.id);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       addNotification({
         type: NotificationType.AGREEMENT_CREATED,
-        message: `Failed to create agreement: ${error}`,
+        message: `Failed to create agreement: ${errorMessage}`,
         severity: 'error',
       });
     }
@@ -103,7 +104,7 @@ const CreateAgreement: React.FC = () => {
   const handleSaveDraft = async (values: CreateAgreementFormValues) => {
     setSavingDraft(true);
     try {
-      const { data } = await createAgreement({
+      await createAgreement({
         variables: {
           input: {
             agreementType: values.agreementType || 'Draft Agreement',
@@ -155,9 +156,10 @@ const CreateAgreement: React.FC = () => {
 
       nav.goToDashboard();
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       addNotification({
         type: NotificationType.AGREEMENT_CREATED,
-        message: `Failed to save draft: ${error}`,
+        message: `Failed to save draft: ${errorMessage}`,
         severity: 'error',
       });
     } finally {
