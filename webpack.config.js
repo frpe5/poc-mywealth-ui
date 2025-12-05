@@ -21,7 +21,7 @@ module.exports = (env, argv) => {
       path: path.resolve(__dirname, 'dist'),
       filename: isProduction ? '[name].[contenthash].js' : '[name].js',
       clean: true,
-      publicPath: isProduction ? '/agreement-ui/' : 'http://localhost:3000/'
+      publicPath: isProduction ? '/' : 'http://localhost:3000/'
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.js', '.jsx'],
