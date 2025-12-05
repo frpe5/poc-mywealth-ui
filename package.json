@@ -1,6 +1,6 @@
 {
   "name": "agreement-ui",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Agreement Management Microfrontend",
   "main": "index.js",
   "scripts": {
