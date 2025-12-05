@@ -149,19 +149,28 @@ jobs:
             
             echo "Attempt $((attempt+1))/$max_attempts - Status: $status, Health: $health"
             
-            if [ "$status" = "Ready" ] && [ "$health" = "Green" ]; then
-              echo "Deployment completed successfully!"
-              exit 0
-            elif [ "$status" = "Ready" ] && [ "$health" != "Grey" ]; then
-              echo "Deployment completed with health: $health"
-              exit 0
+            # Check if deployment is complete
+            if [ "$status" = "Ready" ]; then
+              if [ "$health" = "Green" ]; then
+                echo "✓ Deployment completed successfully!"
+                exit 0
+              elif [ "$health" = "Yellow" ] || [ "$health" = "Red" ]; then
+                echo "⚠ Deployment completed but health is: $health"
+                exit 0
+              fi
+            fi
+            
+            # Check for failure states
+            if [ "$status" = "Terminating" ] || [ "$status" = "Terminated" ]; then
+              echo "✗ Environment is terminating"
+              exit 1
             fi
             
             sleep 10
             ((attempt++))
           done
           
-          echo "Deployment timed out or failed"
+          echo "⚠ Deployment timed out after 10 minutes"
           exit 1
 
       - name: Verify deployment
@@ -184,15 +193,50 @@ jobs:
           fi
 
       - name: Rollback on failure
-        if: failure() && steps.current_version.outputs.current_version != ''
+        if: failure() && steps.current_version.outputs.current_version != '' && steps.wait_deploy.outcome == 'failure'
         run: |
-          echo "Deployment failed. Rolling back to version: ${{ steps.current_version.outputs.current_version }}"
+          echo "Deployment failed. Checking if rollback is possible..."
           
-          aws elasticbeanstalk update-environment \
-            --environment-name "poc-mywealth-ui-dev" \
-            --version-label "${{ steps.current_version.outputs.current_version }}"
+          # Check current environment status
+          STATUS=$(aws elasticbeanstalk describe-environments \
+            --environment-names "poc-mywealth-ui-dev" \
+            --query 'Environments[0].Status' \
+            --output text)
           
-          echo "Rollback initiated"
+          echo "Current environment status: $STATUS"
+          
+          if [ "$STATUS" != "Ready" ]; then
+            echo "⚠ Environment is not Ready ($STATUS). Waiting for it to stabilize before rollback..."
+            
+            # Wait up to 5 minutes for environment to become Ready
+            for i in {1..30}; do
+              sleep 10
+              STATUS=$(aws elasticbeanstalk describe-environments \
+                --environment-names "poc-mywealth-ui-dev" \
+                --query 'Environments[0].Status' \
+                --output text)
+              
+              if [ "$STATUS" = "Ready" ]; then
+                echo "✓ Environment is now Ready"
+                break
+              fi
+              
+              echo "Waiting... ($i/30) Status: $STATUS"
+            done
+          fi
+          
+          if [ "$STATUS" = "Ready" ]; then
+            echo "Rolling back to version: ${{ steps.current_version.outputs.current_version }}"
+            
+            aws elasticbeanstalk update-environment \
+              --environment-name "poc-mywealth-ui-dev" \
+              --version-label "${{ steps.current_version.outputs.current_version }}"
+            
+            echo "✓ Rollback initiated"
+          else
+            echo "✗ Cannot rollback - environment is still in $STATUS state"
+            echo "Manual intervention may be required"
+          fi
 
       - name: Get environment health
         if: always()
