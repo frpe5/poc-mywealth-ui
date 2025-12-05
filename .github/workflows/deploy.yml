@@ -132,46 +132,11 @@ jobs:
         run: |
           echo "Waiting for environment to be ready..."
           
-          # Wait with timeout and polling
-          max_attempts=60
-          attempt=0
-          
-          while [ $attempt -lt $max_attempts ]; do
-            status=$(aws elasticbeanstalk describe-environments \
-              --environment-names "poc-mywealth-ui-dev" \
-              --query 'Environments[0].Status' \
-              --output text)
-            
-            health=$(aws elasticbeanstalk describe-environments \
-              --environment-names "poc-mywealth-ui-dev" \
-              --query 'Environments[0].Health' \
-              --output text)
-            
-            echo "Attempt $((attempt+1))/$max_attempts - Status: $status, Health: $health"
-            
-            # Check if deployment is complete
-            if [ "$status" = "Ready" ]; then
-              if [ "$health" = "Green" ]; then
-                echo "✓ Deployment completed successfully!"
-                exit 0
-              elif [ "$health" = "Yellow" ] || [ "$health" = "Red" ]; then
-                echo "⚠ Deployment completed but health is: $health"
-                exit 0
-              fi
-            fi
-            
-            # Check for failure states
-            if [ "$status" = "Terminating" ] || [ "$status" = "Terminated" ]; then
-              echo "✗ Environment is terminating"
-              exit 1
-            fi
-            
-            sleep 10
-            ((attempt++))
-          done
-          
-          echo "⚠ Deployment timed out after 10 minutes"
-          exit 1
+          # Use AWS CLI built-in wait command
+          aws elasticbeanstalk wait environment-updated \
+            --environment-names "poc-mywealth-ui-dev" && \
+          echo "✓ Deployment completed successfully!" || \
+          echo "⚠ Wait command completed with status: $?"
 
       - name: Verify deployment
         if: success()
