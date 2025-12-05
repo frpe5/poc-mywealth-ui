@@ -1,4 +1,4 @@
-## Agreement UI - React Microfrontend
+# Agreement UI - React Microfrontend
 
 A React-based microfrontend application for managing agreements, built with TypeScript, Material-UI, and GraphQL. Fully configured with **Webpack Module Federation** for integration into larger applications.
 
