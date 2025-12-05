@@ -7,10 +7,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -19,31 +20,68 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1
 
-      - name: Install zip
-        run: sudo apt-get install -y zip
-
       - name: Generate version label
         id: version
-        run: echo "VERSION=build-$(date +%s)" >> $GITHUB_ENV
+        run: |
+          VERSION="build-$(date +%s)-${GITHUB_SHA::7}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "S3_KEY=deploy-${VERSION}.zip" >> $GITHUB_ENV
+          echo "Generated version: $VERSION"
 
       - name: Zip application
-        run: zip -r deploy.zip . -x "*.git*" "node_modules/*" "dist/*" "*.log" ".vscode/*" ".idea/*" "*.md"
+        run: |
+          zip -r deploy.zip . \
+            -x "*.git*" \
+            -x "node_modules/*" \
+            -x "dist/*" \
+            -x "*.log" \
+            -x ".vscode/*" \
+            -x ".idea/*" \
+            -x "*.md" \
+            -x "frontend.log" \
+            -x ".env.example" \
+            -x "CODE_REVIEW_SUMMARY.md" \
+            -x "DEPLOYMENT.md" \
+            -x "MICROFRONTEND_EXAMPLES.md" \
+            -x "MOCK_*.md" \
+            -x "PROGRAM_FEES_IMPLEMENTATION.md"
+          ls -lh deploy.zip
 
       - name: Upload to S3
         run: |
-          S3_KEY="deploy-${VERSION}.zip"
-          echo "S3_KEY=$S3_KEY" >> $GITHUB_ENV
-          aws s3 cp deploy.zip s3://elasticbeanstalk-ca-central-1-682740202133/$S3_KEY
+          aws s3 cp deploy.zip s3://elasticbeanstalk-ca-central-1-682740202133/$S3_KEY \
+            --metadata "commit-sha=${GITHUB_SHA},branch=${GITHUB_REF##*/},build-number=${GITHUB_RUN_NUMBER}"
+          echo "Uploaded to: s3://elasticbeanstalk-ca-central-1-682740202133/$S3_KEY"
 
       - name: Create EB application version
         run: |
           aws elasticbeanstalk create-application-version \
             --application-name "demo-mywealth-ui" \
             --version-label "$VERSION" \
-            --source-bundle S3Bucket="elasticbeanstalk-ca-central-1-682740202133",S3Key="$S3_KEY"
+            --description "Commit ${GITHUB_SHA::7} by ${GITHUB_ACTOR}" \
+            --source-bundle S3Bucket="elasticbeanstalk-ca-central-1-682740202133",S3Key="$S3_KEY" \
+            --no-auto-create-application
+          echo "Created application version: $VERSION"
 
       - name: Deploy to EB environment
         run: |
           aws elasticbeanstalk update-environment \
             --environment-name "Demo-mywealth-ui-env" \
             --version-label "$VERSION"
+          echo "Deployment initiated for version: $VERSION"
+
+      - name: Wait for deployment to complete
+        run: |
+          echo "Waiting for environment to be ready..."
+          aws elasticbeanstalk wait environment-updated \
+            --environment-names "Demo-mywealth-ui-env" \
+            --no-paginate
+          echo "Deployment completed successfully!"
+
+      - name: Get environment health
+        if: always()
+        run: |
+          aws elasticbeanstalk describe-environment-health \
+            --environment-name "Demo-mywealth-ui-env" \
+            --attribute-names All \
+            --output table || echo "Could not retrieve environment health"
