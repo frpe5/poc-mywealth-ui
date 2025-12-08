@@ -32,6 +32,7 @@ const PendingModificationRequests: React.FC = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [rawModificationRequests, setRawModificationRequests] = useState<any>(null);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const statusFilters: { [key: number]: ModificationRequestStatus[] | undefined } = {
     0: [ModificationRequestStatus.PENDING],
@@ -56,14 +57,16 @@ const PendingModificationRequests: React.FC = () => {
   });
 
   React.useEffect(() => {
-    if (!loading) {
+    if (!loading && !hasLoadedOnce) {
       import('../../mocks/mockStore').then(({ getMockModificationRequests }) => {
         const mockData = getMockModificationRequests();
         if (mockData) {
           setRawModificationRequests(mockData);
+          setHasLoadedOnce(true);
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   const [approveRequest, { loading: approving }] = useMutation(APPROVE_MODIFICATION_REQUEST);

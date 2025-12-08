@@ -85,7 +85,10 @@ export class MockLink extends ApolloLink {
 
           if (storeFunctions[actualOperationName]) {
             storeFunctions[actualOperationName](result);
-            console.log(`📦 Stored in mockStore[${actualOperationName}]:`, result);
+            // Disable logging in test environment
+            if (process.env.NODE_ENV !== 'test') {
+              console.log(`📦 Stored in mockStore[${actualOperationName}]:`, result);
+            }
           }
 
           // IMPORTANT: Return raw data without Apollo processing
@@ -94,7 +97,10 @@ export class MockLink extends ApolloLink {
             [actualOperationName]: result,
           };
 
-          console.log('🎭 Sending raw response to Apollo:', { operation: actualOperationName, hasData: !!result });
+          // Disable logging in test environment
+          if (process.env.NODE_ENV !== 'test') {
+            console.log('🎭 Sending raw response to Apollo:', { operation: actualOperationName, hasData: !!result });
+          }
 
           // Send as raw data - Apollo will use it directly
           observer.next({ data: rawResponse } as FetchResult);

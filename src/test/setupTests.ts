@@ -2,6 +2,9 @@ import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
+// Set test environment
+process.env.NODE_ENV = 'test';
+
 // Cleanup after each test case
 afterEach(() => {
   cleanup();

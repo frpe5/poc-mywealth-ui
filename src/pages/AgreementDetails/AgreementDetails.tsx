@@ -39,6 +39,7 @@ const AgreementDetails: React.FC = () => {
   const nav = useAppNavigation();
   const [activeTab, setActiveTab] = React.useState(0);
   const [rawAgreement, setRawAgreement] = React.useState<any>(null);
+  const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false);
 
   const { data, loading, error } = useQuery(GET_AGREEMENT_BY_ID, {
     variables: { id },
@@ -47,14 +48,16 @@ const AgreementDetails: React.FC = () => {
   });
 
   React.useEffect(() => {
-    if (!loading) {
+    if (!loading && !hasLoadedOnce) {
       import('../../mocks/mockStore').then(({ getMockAgreement }) => {
         const mockData = getMockAgreement();
         if (mockData) {
           setRawAgreement(mockData);
+          setHasLoadedOnce(true);
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   const handleBack = () => {

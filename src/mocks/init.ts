@@ -4,7 +4,8 @@
  */
 
 // Check if we're in development and initialize mocks by default
-if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+// Skip this in test environment to avoid localStorage access issues
+if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
   // Check localStorage first
   const stored = typeof window !== 'undefined' && window.localStorage 
     ? localStorage.getItem('mockConfig') 

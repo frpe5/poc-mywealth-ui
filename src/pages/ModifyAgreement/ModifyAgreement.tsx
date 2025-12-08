@@ -20,6 +20,8 @@ const ModifyAgreement: React.FC = () => {
   const { addNotification } = useAppContext();
   const [rawAgreement, setRawAgreement] = React.useState<any>(null);
   const [rawAccounts, setRawAccounts] = React.useState<any>(null);
+  const [hasLoadedAgreement, setHasLoadedAgreement] = React.useState(false);
+  const [hasLoadedAccounts, setHasLoadedAccounts] = React.useState(false);
 
   const { data, loading, error, refetch } = useQuery(GET_AGREEMENT_BY_ID, {
     variables: { id },
@@ -28,14 +30,16 @@ const ModifyAgreement: React.FC = () => {
   });
 
   React.useEffect(() => {
-    if (!loading) {
+    if (!loading && !hasLoadedAgreement) {
       import('../../mocks/mockStore').then(({ getMockAgreement }) => {
         const mockData = getMockAgreement();
         if (mockData) {
           setRawAgreement(mockData);
+          setHasLoadedAgreement(true);
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   // Fetch client accounts to get selected accounts
@@ -46,14 +50,16 @@ const ModifyAgreement: React.FC = () => {
   });
 
   React.useEffect(() => {
-    if (!accountsLoading) {
+    if (!accountsLoading && !hasLoadedAccounts) {
       import('../../mocks/mockStore').then(({ getMockClientAccounts }) => {
         const mockData = getMockClientAccounts();
         if (mockData) {
           setRawAccounts(mockData);
+          setHasLoadedAccounts(true);
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountsLoading]);
 
   const [createModificationRequest, { loading: submitting }] = useMutation(

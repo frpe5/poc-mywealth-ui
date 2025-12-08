@@ -37,14 +37,17 @@ const Dashboard: React.FC = () => {
   const [rawStatsData, setRawStatsData] = React.useState<any>(null);
   
   React.useEffect(() => {
-    import('../../mocks/mockStore').then(({ getMockDashboardStats }) => {
-      const mockStats = getMockDashboardStats();
-      if (mockStats) {
-        setRawStatsData(mockStats);
-      }
-    });
+    // Only fetch once on mount
+    if (!rawStatsData) {
+      import('../../mocks/mockStore').then(({ getMockDashboardStats }) => {
+        const mockStats = getMockDashboardStats();
+        if (mockStats) {
+          setRawStatsData(mockStats);
+        }
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statsLoading]);
+  }, []);
 
   const { data: agreementsData, loading: agreementsLoading, refetch } = useQuery(
     GET_AGREEMENTS,
@@ -65,23 +68,21 @@ const Dashboard: React.FC = () => {
 
   // WORKAROUND: Get raw mock data from store (bypasses Apollo's field filtering)
   const [rawAgreementsData, setRawAgreementsData] = React.useState<any>(null);
+  const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false);
   
   React.useEffect(() => {
-    // Import the store dynamically to get latest data
-    import('../../mocks/mockStore').then(({ getMockAgreements }) => {
-      const mockData = getMockAgreements();
-      if (mockData) {
-        console.log('✅ Got raw mock data from store:', mockData);
-        setRawAgreementsData(mockData);
-      }
-    });
-  }, [agreementsLoading, agreementsData]); // Re-fetch when query completes or data changes
-  
-  // Refetch when component mounts (e.g., returning from another page)
-  React.useEffect(() => {
-    refetch();
+    // Only fetch when loading completes and we haven't loaded yet
+    if (!agreementsLoading && !hasLoadedOnce) {
+      import('../../mocks/mockStore').then(({ getMockAgreements }) => {
+        const mockData = getMockAgreements();
+        if (mockData) {
+          setRawAgreementsData(mockData);
+          setHasLoadedOnce(true);
+        }
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [agreementsLoading]);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);

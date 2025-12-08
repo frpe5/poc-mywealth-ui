@@ -2,7 +2,6 @@
   "name": "agreement-ui",
   "version": "1.1.0",
   "description": "Agreement Management Microfrontend",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "webpack serve --mode development --open",
