@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
-  const { data: statsData, loading: statsLoading } = useQuery(GET_DASHBOARD_STATS, {
+  const { data: statsData } = useQuery(GET_DASHBOARD_STATS, {
     fetchPolicy: 'network-only',
   });
 
