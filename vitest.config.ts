@@ -11,6 +11,11 @@ export default defineConfig({
     testTimeout: 10000,
     hookTimeout: 10000,
     css: true,
+    // Ensure tests run in CI without hanging
+    pool: 'forks',
+    // Explicitly set for CI environments
+    watch: false,
+    reporters: process.env.CI ? ['verbose'] : ['default'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

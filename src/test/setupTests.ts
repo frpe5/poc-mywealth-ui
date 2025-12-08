@@ -5,6 +5,11 @@ import { afterEach, vi } from 'vitest';
 // Set test environment
 process.env.NODE_ENV = 'test';
 
+// Ensure we're not in development mode in CI
+if (process.env.CI) {
+  process.env.REACT_APP_USE_MOCKS = 'false';
+}
+
 // Mock localStorage to prevent mockConfig from accessing it
 const localStorageMock = {
   getItem: vi.fn(() => null),

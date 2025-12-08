@@ -51,10 +51,11 @@ const loadMockConfig = (): MockConfig => {
 
   // If no localStorage config, check environment variable (for build-time configuration)
   // In development mode, default to true to enable mocks by default
-  // In test mode, default to false to prevent hanging tests
+  // In test mode or CI, default to false to prevent hanging tests
   const isDevelopment = typeof process !== 'undefined' 
     && process.env.NODE_ENV !== 'production'
-    && process.env.NODE_ENV !== 'test';
+    && process.env.NODE_ENV !== 'test'
+    && !process.env.CI;
   
   const useMocksEnv = isDevelopment ? true : 
     (typeof process !== 'undefined' && process.env.REACT_APP_USE_MOCKS === 'true');
