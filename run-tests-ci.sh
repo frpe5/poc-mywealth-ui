@@ -28,7 +28,7 @@ for pattern in "${test_patterns[@]}"; do
   echo "Running tests matching: $pattern"
   echo "----------------------------------------"
   
-  if timeout 60s npm test -- --run --reporter=basic "$pattern"; then
+  if timeout 60s npm test -- --run --reporter=default "$pattern"; then
     echo "✓ Passed: $pattern"
     ((passed++))
   else
