@@ -35,13 +35,13 @@ jobs:
           echo "Linting passed"
 
       - name: Run tests
-        timeout-minutes: 10
+        timeout-minutes: 2
         env:
           CI: true
           NODE_ENV: test
         run: |
           echo "Starting tests..."
-          npm test -- --run --reporter=verbose --no-coverage
+          npm test -- --run --reporter=verbose --no-coverage --bail=1
           echo "All tests passed"
 
       - name: Generate test coverage
