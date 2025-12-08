@@ -10,16 +10,10 @@ export default defineConfig({
     setupFiles: './src/test/setupTests.ts',
     testTimeout: 30000,
     hookTimeout: 30000,
-    css: true,
-    // Prevent watch mode and ensure single-threaded execution in CI
+    css: false,
     watch: false,
-    isolate: true,
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    isolate: false,
+    maxConcurrency: 1,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

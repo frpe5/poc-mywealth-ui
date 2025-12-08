@@ -34,15 +34,15 @@ jobs:
           npm run lint
           echo "Linting passed"
 
-      - name: Run tests
+      - name: Run tests (batched approach)
         timeout-minutes: 5
         env:
           CI: true
           NODE_ENV: test
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
-          echo "Starting tests..."
-          npm test -- --run --reporter=default --no-coverage --passWithNoTests
-          echo "All tests passed"
+          chmod +x ./run-tests-ci.sh
+          ./run-tests-ci.sh
 
       - name: Build application
         run: |
