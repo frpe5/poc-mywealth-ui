@@ -7,7 +7,6 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  Paper,
   Chip,
   Typography,
   Box,
@@ -50,12 +49,12 @@ const AgreementTable: React.FC<AgreementTableProps> = ({
     return statusColors[status];
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-    }).format(amount);
-  };
+  // const formatCurrency = (amount: number, currency: string) => {
+  //   return new Intl.NumberFormat('en-US', {
+  //     style: 'currency',
+  //     currency: currency || 'USD',
+  //   }).format(amount);
+  // };
 
   const formatDate = (dateString: string) => {
     try {

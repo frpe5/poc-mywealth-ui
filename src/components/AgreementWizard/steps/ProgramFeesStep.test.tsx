@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 import { render } from '../../../test/testUtils';
 import ProgramFeesStep from './ProgramFeesStep';
 import { CreateAgreementFormValues } from '../../../types';

@@ -7,7 +7,7 @@ import { mockResolvers } from '../mocks/mockResolvers';
  * Uses the same MockLink and resolvers as the main application
  */
 export function createMockApolloClient() {
-  const mockLink = new MockLink(mockResolvers);
+  const mockLink = new MockLink(mockResolvers as any);
 
   return new ApolloClient({
     link: mockLink,

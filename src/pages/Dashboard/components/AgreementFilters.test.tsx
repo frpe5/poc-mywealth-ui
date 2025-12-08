@@ -53,7 +53,7 @@ describe('AgreementFilters', () => {
   });
 
   it('handles period filter changes', async () => {
-    const user = userEvent.setup();
+    userEvent.setup();
     
     render(
       <AgreementFilters 

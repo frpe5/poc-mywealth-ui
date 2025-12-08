@@ -8,8 +8,7 @@ export const formatCurrency = (amount: number, currency: string = 'USD'): string
 };
 
 export const formatDate = (
-  dateString: string,
-  formatStr: string = 'MMM dd, yyyy'
+  dateString: string
 ): string => {
   if (!dateString) return '-';
   try {

@@ -38,13 +38,15 @@ describe('BillingDetailsStep', () => {
   it('renders billing details fields', () => {
     render(
       <BillingDetailsStep
-        values={defaultValues}
-        setFieldValue={mockSetFieldValue}
-        errors={{}}
-        touched={{}}
-        isSubmitting={false}
-        isValidating={false}
-        submitCount={0}
+        {...({
+          values: defaultValues,
+          setFieldValue: mockSetFieldValue,
+          errors: {},
+          touched: {},
+          isSubmitting: false,
+          isValidating: false,
+          submitCount: 0,
+        } as any)}
       />
     );
 
@@ -56,13 +58,15 @@ describe('BillingDetailsStep', () => {
     
     render(
       <BillingDetailsStep
-        values={defaultValues}
-        setFieldValue={mockSetFieldValue}
-        errors={{}}
-        touched={{}}
-        isSubmitting={false}
-        isValidating={false}
-        submitCount={0}
+        {...({
+          values: defaultValues,
+          setFieldValue: mockSetFieldValue,
+          errors: {},
+          touched: {},
+          isSubmitting: false,
+          isValidating: false,
+          submitCount: 0,
+        } as any)}
       />
     );
 
@@ -75,13 +79,15 @@ describe('BillingDetailsStep', () => {
   it('shows warning when no client is selected', () => {
     render(
       <BillingDetailsStep
-        values={defaultValues}
-        setFieldValue={mockSetFieldValue}
-        errors={{}}
-        touched={{}}
-        isSubmitting={false}
-        isValidating={false}
-        submitCount={0}
+        {...({
+          values: defaultValues,
+          setFieldValue: mockSetFieldValue,
+          errors: {},
+          touched: {},
+          isSubmitting: false,
+          isValidating: false,
+          submitCount: 0,
+        } as any)}
       />
     );
 
@@ -98,13 +104,15 @@ describe('BillingDetailsStep', () => {
 
     render(
       <BillingDetailsStep
-        values={valuesWithBilling}
-        setFieldValue={mockSetFieldValue}
-        errors={{}}
-        touched={{}}
-        isSubmitting={false}
-        isValidating={false}
-        submitCount={0}
+        {...({
+          values: valuesWithBilling,
+          setFieldValue: mockSetFieldValue,
+          errors: {},
+          touched: {},
+          isSubmitting: false,
+          isValidating: false,
+          submitCount: 0,
+        } as any)}
       />
     );
 

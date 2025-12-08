@@ -55,6 +55,7 @@ const ModificationRequestDialog: React.FC<ModificationRequestDialogProps> = ({
 
   const getStatusColor = (status: ModificationRequestStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
     const statusColors: Record<ModificationRequestStatus, 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'> = {
+      [ModificationRequestStatus.DRAFT]: 'info',
       [ModificationRequestStatus.PENDING]: 'warning',
       [ModificationRequestStatus.APPROVED]: 'success',
       [ModificationRequestStatus.REJECTED]: 'error',

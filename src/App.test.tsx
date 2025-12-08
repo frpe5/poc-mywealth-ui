@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { screen } from '@testing-library/react';
 import { render } from './test/testUtils';
 import App from './App';
 

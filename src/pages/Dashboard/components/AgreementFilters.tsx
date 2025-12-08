@@ -11,7 +11,7 @@ import {
   SelectChangeEvent,
   Link,
 } from '@mui/material';
-import { AgreementFilters as FilterType, AgreementStatus } from '../../../types';
+import { AgreementFilters as FilterType } from '../../../types';
 
 interface AgreementFiltersProps {
   filters: FilterType;
@@ -41,21 +41,21 @@ const AgreementFilters: React.FC<AgreementFiltersProps> = ({
 }) => {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onFiltersChange({ ...filters, searchTerm: event.target.value });
-  };
+  // const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   onFiltersChange({ ...filters, searchTerm: event.target.value });
+  // };
 
   const handleClientNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onFiltersChange({ ...filters, clientName: event.target.value });
   };
 
-  const handleStatusChange = (event: SelectChangeEvent<string[]>) => {
-    const value = event.target.value;
-    onFiltersChange({
-      ...filters,
-      status: typeof value === 'string' ? [value as AgreementStatus] : (value as AgreementStatus[]),
-    });
-  };
+  // const handleStatusChange = (event: SelectChangeEvent<string[]>) => {
+  //   const value = event.target.value;
+  //   onFiltersChange({
+  //     ...filters,
+  //     status: typeof value === 'string' ? [value as AgreementStatus] : (value as AgreementStatus[]),
+  //   });
+  // };
 
   const handleTypeChange = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value;
@@ -65,13 +65,13 @@ const AgreementFilters: React.FC<AgreementFiltersProps> = ({
     });
   };
 
-  const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onFiltersChange({ ...filters, dateFrom: event.target.value });
-  };
+  // const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   onFiltersChange({ ...filters, dateFrom: event.target.value });
+  // };
 
-  const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onFiltersChange({ ...filters, dateTo: event.target.value });
-  };
+  // const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   onFiltersChange({ ...filters, dateTo: event.target.value });
+  // };
 
   const handleClearFilters = () => {
     onFiltersChange({
