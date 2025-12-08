@@ -10,9 +10,11 @@ export default defineConfig({
     setupFiles: './src/test/setupTests.ts',
     testTimeout: 10000,
     hookTimeout: 10000,
+    teardownTimeout: 10000,
     css: true,
-    // Ensure tests run in CI without hanging
-    pool: 'forks',
+    // Run tests sequentially in CI to prevent hanging
+    maxConcurrency: process.env.CI ? 1 : 5,
+    fileParallelism: process.env.CI ? false : true,
     // Explicitly set for CI environments
     watch: false,
     reporters: process.env.CI ? ['verbose'] : ['default'],

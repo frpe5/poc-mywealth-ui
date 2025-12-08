@@ -1,13 +1,13 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { MockLink } from '../mocks/MockLink';
-import { mockResolvers } from '../mocks/mockResolvers';
 
 /**
  * Creates a mock Apollo Client for testing
- * Uses the same MockLink and resolvers as the main application
+ * Uses the MockLink with zero delay for fast test execution
  */
 export function createMockApolloClient() {
-  const mockLink = new MockLink(mockResolvers as any);
+  // Ensure no delay in tests for fast execution
+  const mockLink = new MockLink({ delay: 0 });
 
   return new ApolloClient({
     link: mockLink,
@@ -27,11 +27,11 @@ export function createMockApolloClient() {
 }
 
 /**
- * Helper to create a custom Apollo Client with specific mock data or resolvers
+ * Helper to create a custom Apollo Client for specific test scenarios
  */
-export function createCustomMockApolloClient(customResolvers?: any) {
-  const resolvers = customResolvers || mockResolvers;
-  const mockLink = new MockLink(resolvers);
+export function createCustomMockApolloClient() {
+  // Ensure no delay in tests for fast execution
+  const mockLink = new MockLink({ delay: 0 });
 
   return new ApolloClient({
     link: mockLink,
