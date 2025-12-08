@@ -12,6 +12,7 @@ export interface AppConfig {
   basePath?: string;
   graphqlEndpoint?: string;
   standalone?: boolean;
+  apolloClient?: any; // Allow passing in a pre-configured Apollo client for testing
 }
 
 interface AppProps extends AppConfig {}
@@ -19,9 +20,10 @@ interface AppProps extends AppConfig {}
 function App({
   basePath = '',
   graphqlEndpoint = 'http://localhost:8080/graphql',
-  standalone = true
+  standalone = true,
+  apolloClient: providedApolloClient
 }: AppProps = {}) {
-  const apolloClient = createApolloClient(graphqlEndpoint);
+  const apolloClient = providedApolloClient || createApolloClient(graphqlEndpoint);
 
   const content = (
     <ErrorBoundary>

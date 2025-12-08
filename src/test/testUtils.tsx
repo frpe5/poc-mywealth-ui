@@ -32,13 +32,13 @@ export function renderWithProviders(
 
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <ApolloProvider client={apolloClient}>
-        <BrowserRouter>
+      <BrowserRouter>
+        <ApolloProvider client={apolloClient}>
           <ThemeProvider theme={theme}>
             <AppProvider>{children}</AppProvider>
           </ThemeProvider>
-        </BrowserRouter>
-      </ApolloProvider>
+        </ApolloProvider>
+      </BrowserRouter>
     );
   }
 
