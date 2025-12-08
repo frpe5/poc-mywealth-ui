@@ -11,6 +11,15 @@ export default defineConfig({
     testTimeout: 30000,
     hookTimeout: 30000,
     css: true,
+    // Prevent watch mode and ensure single-threaded execution in CI
+    watch: false,
+    isolate: true,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
