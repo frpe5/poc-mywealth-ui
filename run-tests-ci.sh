@@ -4,17 +4,22 @@ set -e
 echo "=== Running tests in batches to identify hangs ==="
 echo "Started at: $(date)"
 
-# Array of test directories/patterns
+# Array of specific test files (avoiding globs that don't work in vitest CLI)
 test_patterns=(
-  "src/utils/**/*.test.ts*"
-  "src/hooks/**/*.test.ts*"
+  "src/utils/helpers.test.ts"
+  "src/hooks/useAppNavigation.test.ts"
   "src/components/ErrorBoundary.test.tsx"
-  "src/components/AgreementWizard/**/*.test.ts*"
-  "src/pages/Dashboard/**/*.test.ts*"
-  "src/pages/AgreementDetails/**/*.test.ts*"
-  "src/pages/CreateAgreement/**/*.test.ts*"
-  "src/pages/ModifyAgreement/**/*.test.ts*"
-  "src/pages/PendingModificationRequests/**/*.test.ts*"
+  "src/components/AgreementWizard/steps/BasicInformationStep.test.tsx"
+  "src/components/AgreementWizard/steps/BillingDetailsStep.test.tsx"
+  "src/components/AgreementWizard/steps/ProductsStep.test.tsx"
+  "src/components/AgreementWizard/steps/ProgramFeesStep.test.tsx"
+  "src/pages/Dashboard/Dashboard.test.tsx"
+  "src/pages/Dashboard/components/AgreementFilters.test.tsx"
+  "src/pages/Dashboard/components/DashboardStats.test.tsx"
+  "src/pages/AgreementDetails/AgreementDetails.test.tsx"
+  "src/pages/CreateAgreement/CreateAgreement.test.tsx"
+  "src/pages/ModifyAgreement/ModifyAgreement.test.tsx"
+  "src/pages/PendingModificationRequests/PendingModificationRequests.test.tsx"
   "src/App.test.tsx"
 )
 
