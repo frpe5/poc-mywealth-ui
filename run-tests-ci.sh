@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo "=== Running tests in batches to identify hangs ==="
 echo "Started at: $(date)"
@@ -35,20 +34,20 @@ for pattern in "${test_patterns[@]}"; do
   
   if timeout 60s npm test -- --run --reporter=default "$pattern"; then
     echo "✓ Passed: $pattern"
-    ((passed++))
+    passed=$((passed + 1))
   else
     exit_code=$?
     if [ $exit_code -eq 124 ] || [ $exit_code -eq 143 ]; then
       echo "✗ TIMEOUT: $pattern (hung after 60s)"
-      ((failed++))
+      failed=$((failed + 1))
       exit 1
     else
       echo "✗ Failed: $pattern (exit code: $exit_code)"
-      ((failed++))
+      failed=$((failed + 1))
       exit $exit_code
     fi
   fi
-  ((total++))
+  total=$((total + 1))
 done
 
 echo ""
