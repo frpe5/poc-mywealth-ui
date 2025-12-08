@@ -23,6 +23,8 @@ jobs:
         run: |
           npm ci --prefer-offline --no-audit
           echo "Dependencies installed successfully"
+          echo "Node: $(node --version)"
+          echo "NPM: $(npm --version)"
 
       - name: Run type checking
         run: |
