@@ -141,7 +141,8 @@ export const setSpecificMockError = (operation: string, errorMessage: string) =>
 
 export const clearSpecificMockError = (operation: string) => {
   const config = getMockConfig();
-  const { [operation]: _, ...rest } = config.errorConfig.specificErrors || {};
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { [operation]: _unused, ...rest } = config.errorConfig.specificErrors || {};
   saveMockConfig({
     errorConfig: {
       ...config.errorConfig,

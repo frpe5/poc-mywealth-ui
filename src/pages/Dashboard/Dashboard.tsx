@@ -26,6 +26,7 @@ const Dashboard: React.FC = () => {
   // Initialize filters based on the default tab (Pending)
   React.useEffect(() => {
     setFilters({ ...filters, status: [AgreementStatus.PENDING_APPROVAL] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
   const { data: statsData, loading: statsLoading } = useQuery(GET_DASHBOARD_STATS, {
@@ -42,6 +43,7 @@ const Dashboard: React.FC = () => {
         setRawStatsData(mockStats);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statsLoading]);
 
   const { data: agreementsData, loading: agreementsLoading, refetch } = useQuery(
@@ -78,6 +80,7 @@ const Dashboard: React.FC = () => {
   // Refetch when component mounts (e.g., returning from another page)
   React.useEffect(() => {
     refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
