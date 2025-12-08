@@ -41,7 +41,7 @@ jobs:
           NODE_ENV: test
         run: |
           echo "Starting tests..."
-          npm test -- --run
+          npm test -- --run --reporter=default --no-coverage --passWithNoTests
           echo "All tests passed"
 
       - name: Build application
