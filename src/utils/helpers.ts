@@ -14,6 +14,10 @@ export const formatDate = (
   if (!dateString) return '-';
   try {
     const date = new Date(dateString);
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return dateString;
+    }
     // Simple date formatting without date-fns for this utility
     return date.toLocaleDateString('en-US', {
       year: 'numeric',

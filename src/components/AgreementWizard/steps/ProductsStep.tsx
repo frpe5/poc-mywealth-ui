@@ -58,7 +58,7 @@ const ProductsStep: React.FC<Props> = ({ values, setFieldValue, errors, touched 
   const products = rawProducts || productsData?.products || [];
 
   const handleOpenDialog = (index?: number) => {
-    if (index !== undefined) {
+    if (index !== undefined && values.products && values.products[index]) {
       setEditIndex(index);
       setCurrentProduct(values.products[index]);
     } else {
@@ -80,7 +80,7 @@ const ProductsStep: React.FC<Props> = ({ values, setFieldValue, errors, touched 
   };
 
   const handleSaveProduct = () => {
-    const newProducts = [...values.products];
+    const newProducts = [...(values.products || [])];
     if (editIndex !== null) {
       newProducts[editIndex] = currentProduct;
     } else {
@@ -95,7 +95,7 @@ const ProductsStep: React.FC<Props> = ({ values, setFieldValue, errors, touched 
   };
 
   const calculateGrandTotal = () => {
-    return values.products.reduce((sum, product) => sum + calculateTotal(product), 0);
+    return (values.products || []).reduce((sum, product) => sum + calculateTotal(product), 0);
   };
 
   return (
@@ -111,7 +111,7 @@ const ProductsStep: React.FC<Props> = ({ values, setFieldValue, errors, touched 
         </Button>
       </Box>
 
-      {values.products.length === 0 ? (
+      {(!values.products || values.products.length === 0) ? (
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography color="text.secondary">
             No products added yet. Click "Add Product" to get started.
@@ -135,7 +135,7 @@ const ProductsStep: React.FC<Props> = ({ values, setFieldValue, errors, touched 
                 <FieldArray name="products">
                   {({ remove }) => (
                     <>
-                      {values.products.map((product, index) => (
+                      {(values.products || []).map((product, index) => (
                         <TableRow key={index}>
                           <TableCell>{product.productName}</TableCell>
                           <TableCell>{product.productCode}</TableCell>

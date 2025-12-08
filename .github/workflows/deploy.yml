@@ -24,6 +24,34 @@ jobs:
           npm ci --prefer-offline --no-audit
           echo "Dependencies installed successfully"
 
+      - name: Run type checking
+        run: |
+          npm run type-check
+          echo "Type checking passed"
+
+      - name: Run linting
+        run: |
+          npm run lint
+          echo "Linting passed"
+
+      - name: Run tests
+        run: |
+          npm test -- --run --reporter=verbose
+          echo "All tests passed"
+
+      - name: Generate test coverage
+        run: |
+          npm run test:coverage -- --run
+          echo "Coverage report generated"
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
       - name: Build application
         run: |
           npm run build

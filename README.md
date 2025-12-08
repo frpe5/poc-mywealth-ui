@@ -327,6 +327,119 @@ remotes: {
 - **Remote Entry**: `http://localhost:3000/remoteEntry.js`
 - **BFF GraphQL**: `http://localhost:8080/graphql`
 
+### Testing
+
+Run tests:
+```bash
+npm test              # Run tests in watch mode
+npm run test:ui       # Open Vitest UI
+npm run test:coverage # Generate coverage report
+```
+
+#### Test Structure
+
+Tests are located alongside their source files with `.test.tsx` or `.test.ts` extensions:
+
+```
+src/
+├── components/
+│   ├── ErrorBoundary.test.tsx
+│   └── AgreementWizard/
+│       └── steps/
+│           ├── BasicInformationStep.test.tsx
+│           ├── ProductsStep.test.tsx
+│           ├── BillingDetailsStep.test.tsx
+│           ├── ProgramFeesStep.tsx
+│           └── ProgramFeesStep.test.tsx
+├── pages/
+│   ├── Dashboard/
+│   │   ├── Dashboard.tsx
+│   │   ├── Dashboard.test.tsx
+│   │   └── components/
+│   │       ├── AgreementFilters.test.tsx
+│   │       └── DashboardStats.test.tsx
+│   ├── CreateAgreement/
+│   │   ├── CreateAgreement.tsx
+│   │   └── CreateAgreement.test.tsx
+│   ├── ModifyAgreement/
+│   │   └── ModifyAgreement.test.tsx
+│   ├── AgreementDetails/
+│   │   └── AgreementDetails.test.tsx
+│   └── PendingModificationRequests/
+│       └── PendingModificationRequests.test.tsx
+├── hooks/
+│   └── useAppNavigation.test.ts
+├── utils/
+│   └── helpers.test.ts
+├── App.test.tsx
+└── test/
+    ├── setupTests.ts          # Test configuration
+    ├── testUtils.tsx          # Custom render with providers
+    ├── testHelpers.ts         # Test utilities and matchers
+    └── mockApolloClient.ts    # Mock Apollo Client setup
+```
+
+#### Testing Stack
+
+- **Vitest**: Fast test runner with native ESM support
+- **React Testing Library**: Component testing utilities
+- **@testing-library/user-event**: User interaction simulation
+- **jsdom**: Browser environment simulation
+- **MockLink**: GraphQL mocking (reuses existing mock system)
+
+#### Writing Tests
+
+Use the custom `render` function from test utilities to wrap components with all necessary providers:
+
+```tsx
+import { describe, it, expect } from 'vitest';
+import { screen } from '@testing-library/react';
+import { render } from '../../test/testUtils';
+import MyComponent from './MyComponent';
+
+describe('MyComponent', () => {
+  it('renders correctly', () => {
+    render(<MyComponent />);
+    expect(screen.getByText(/hello/i)).toBeInTheDocument();
+  });
+});
+```
+
+#### Test Utilities Available
+
+- **renderWithProviders**: Renders components with all providers (Apollo, Router, Theme, Context)
+- **createMockApolloClient**: Creates Apollo Client with mock data
+- **testDataGenerators**: Generate mock form values and agreements
+- **testHelpers**: Currency formatting, date validation, form helpers, etc.
+
+#### Running Tests
+
+```bash
+# Run all tests in watch mode
+npm test
+
+# Run tests with UI
+npm run test:ui
+
+# Generate coverage report
+npm run test:coverage
+
+# Run tests once (CI mode)
+npm test -- --run
+```
+
+#### Test Coverage Goals
+
+- **Unit Tests**: Individual components and utilities
+- **Integration Tests**: Multi-step flows (e.g., agreement creation)
+- **Component Tests**: UI interactions and state management
+
+#### Example Tests
+
+- ✅ [ProgramFeesStep.test.tsx](src/components/AgreementWizard/steps/ProgramFeesStep.test.tsx) - Fee schedule changes, validation, field updates
+- ✅ [Dashboard.test.tsx](src/pages/Dashboard/Dashboard.test.tsx) - Tab switching, search, filtering
+- ✅ [CreateAgreement.test.tsx](src/pages/CreateAgreement/CreateAgreement.test.tsx) - Full agreement creation flow
+
 ### Linting
 
 Run ESLint:
