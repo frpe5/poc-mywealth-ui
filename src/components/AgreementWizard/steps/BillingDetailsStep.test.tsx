@@ -34,18 +34,47 @@ describe('BillingDetailsStep', () => {
   };
 
   const mockSetFieldValue = vi.fn();
+  
+  const mockFormikProps = {
+    values: defaultValues,
+    errors: {},
+    touched: {},
+    isSubmitting: false,
+    isValidating: false,
+    submitCount: 0,
+    setFieldValue: mockSetFieldValue,
+    setFieldTouched: vi.fn(),
+    setFieldError: vi.fn(),
+    setErrors: vi.fn(),
+    setTouched: vi.fn(),
+    setValues: vi.fn(),
+    setStatus: vi.fn(),
+    setSubmitting: vi.fn(),
+    validateForm: vi.fn(),
+    validateField: vi.fn(),
+    resetForm: vi.fn(),
+    submitForm: vi.fn(),
+    setFormikState: vi.fn(),
+    handleSubmit: vi.fn(),
+    handleReset: vi.fn(),
+    handleBlur: vi.fn(),
+    handleChange: vi.fn(),
+    getFieldProps: vi.fn(),
+    getFieldMeta: vi.fn(),
+    getFieldHelpers: vi.fn(),
+    dirty: false,
+    isValid: true,
+    initialValues: defaultValues,
+    initialErrors: {},
+    initialTouched: {},
+    initialStatus: undefined,
+    registerField: vi.fn(),
+    unregisterField: vi.fn(),
+  };
 
   it('renders billing details fields', () => {
     render(
-      <BillingDetailsStep
-        values={defaultValues}
-        setFieldValue={mockSetFieldValue}
-        errors={{}}
-        touched={{}}
-        isSubmitting={false}
-        isValidating={false}
-        submitCount={0}
-      />
+      <BillingDetailsStep {...mockFormikProps} />
     );
 
     expect(screen.getByText(/billing details/i)).toBeInTheDocument();
@@ -55,15 +84,7 @@ describe('BillingDetailsStep', () => {
     const user = userEvent.setup();
     
     render(
-      <BillingDetailsStep
-        values={defaultValues}
-        setFieldValue={mockSetFieldValue}
-        errors={{}}
-        touched={{}}
-        isSubmitting={false}
-        isValidating={false}
-        submitCount={0}
-      />
+      <BillingDetailsStep {...mockFormikProps} />
     );
 
     const frequencySelect = screen.getByLabelText(/^frequency$/i);
@@ -74,15 +95,7 @@ describe('BillingDetailsStep', () => {
 
   it('shows warning when no client is selected', () => {
     render(
-      <BillingDetailsStep
-        values={defaultValues}
-        setFieldValue={mockSetFieldValue}
-        errors={{}}
-        touched={{}}
-        isSubmitting={false}
-        isValidating={false}
-        submitCount={0}
-      />
+      <BillingDetailsStep {...mockFormikProps} />
     );
 
     expect(screen.getByText(/please select a client in the first step/i)).toBeInTheDocument();
@@ -97,15 +110,7 @@ describe('BillingDetailsStep', () => {
     };
 
     render(
-      <BillingDetailsStep
-        values={valuesWithBilling}
-        setFieldValue={mockSetFieldValue}
-        errors={{}}
-        touched={{}}
-        isSubmitting={false}
-        isValidating={false}
-        submitCount={0}
-      />
+      <BillingDetailsStep {...mockFormikProps} values={valuesWithBilling} />
     );
 
     // For MUI Select, check the display text instead of value
