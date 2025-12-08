@@ -7,6 +7,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    environmentOptions: {
+      jsdom: {
+        url: 'http://localhost/',
+        pretendToBeVisual: true,
+      },
+    },
     setupFiles: './src/test/setupTests.ts',
     testTimeout: 10000,
     hookTimeout: 10000,
@@ -15,6 +21,8 @@ export default defineConfig({
     // Run tests sequentially in CI to prevent hanging
     maxConcurrency: process.env.CI ? 1 : 5,
     fileParallelism: process.env.CI ? false : true,
+    // Use forks in CI to avoid thread-related hangs
+    pool: process.env.CI ? 'forks' : 'threads',
     // Explicitly set for CI environments
     watch: false,
     reporters: process.env.CI ? ['verbose'] : ['default'],
