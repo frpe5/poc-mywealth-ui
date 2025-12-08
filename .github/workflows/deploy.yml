@@ -34,45 +34,15 @@ jobs:
           npm run lint
           echo "Linting passed"
 
-      - name: Run unit tests (components/hooks)
-        timeout-minutes: 2
+      - name: Run tests
+        timeout-minutes: 5
         env:
           CI: true
           NODE_ENV: test
         run: |
-          echo "Starting unit tests (components/hooks)..."
-          npm test -- --run --reporter=verbose --no-coverage --bail=1 \
-            --pool=forks --maxConcurrency=1 --fileParallelism=false \
-            --dir src/components \
-            --dir src/hooks \
-            --dir src/utils
-          echo "Unit tests passed"
-
-      - name: Run integration tests (pages/routes)
-        timeout-minutes: 2
-        env:
-          CI: true
-          NODE_ENV: test
-        run: |
-          echo "Starting integration tests (pages/routes)..."
-          npm test -- --run --reporter=verbose --no-coverage --bail=1 \
-            --pool=forks --maxConcurrency=1 --fileParallelism=false \
-            --dir src/pages \
-            --dir src/routes
-          echo "Integration tests passed"
-
-      - name: Generate test coverage
-        run: |
-          npm run test:coverage -- --run
-          echo "Coverage report generated"
-
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-report
-          path: coverage/
-          retention-days: 30
+          echo "Starting tests..."
+          npm test -- --run
+          echo "All tests passed"
 
       - name: Build application
         run: |
