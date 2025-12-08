@@ -43,9 +43,9 @@ jobs:
           echo "Starting unit tests (components/hooks)..."
           npm test -- --run --reporter=verbose --no-coverage --bail=1 \
             --pool=forks --maxConcurrency=1 --fileParallelism=false \
-            --include "src/components/**/*.test.ts?(x)" \
-            --include "src/hooks/**/*.test.ts?(x)" \
-            --include "src/utils/**/*.test.ts?(x)"
+            "src/components/**/*.test.ts?(x)" \
+            "src/hooks/**/*.test.ts?(x)" \
+            "src/utils/**/*.test.ts?(x)"
           echo "Unit tests passed"
 
       - name: Run integration tests (pages/routes)
@@ -57,9 +57,9 @@ jobs:
           echo "Starting integration tests (pages/routes)..."
           npm test -- --run --reporter=verbose --no-coverage --bail=1 \
             --pool=forks --maxConcurrency=1 --fileParallelism=false \
-            --include "src/pages/**/*.test.ts?(x)" \
-            --include "src/routes/**/*.test.ts?(x)" \
-            --include "src/**/*.test.ts?(x)"
+            "src/pages/**/*.test.ts?(x)" \
+            "src/routes/**/*.test.ts?(x)" \
+            "src/**/*.test.ts?(x)"
           echo "Integration tests passed"
 
       - name: Generate test coverage
