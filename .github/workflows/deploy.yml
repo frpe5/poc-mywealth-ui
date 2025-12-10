@@ -6,7 +6,8 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on:
+      - codebuild-test-runners-${{ github.run_id }}-${{ github.run_attempt }}
     timeout-minutes: 20
     
     steps:
